@@ -2,3 +2,28 @@
 We highly recommend you use SASS and write your custom styles in sass/_custom.scss.
 However, this blank file is available if you prefer
 */
+
+
+.header {
+	
+background: rgb(254,184,231); /* Old browsers */
+background: -moz-linear-gradient(45deg,  rgba(254,184,231,1) 0%, rgba(222,129,193,1) 24%, rgba(94,6,66,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,rgba(254,184,231,1)), color-stop(24%,rgba(222,129,193,1)), color-stop(100%,rgba(94,6,66,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(45deg,  rgba(254,184,231,1) 0%,rgba(222,129,193,1) 24%,rgba(94,6,66,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(45deg,  rgba(254,184,231,1) 0%,rgba(222,129,193,1) 24%,rgba(94,6,66,1) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(45deg,  rgba(254,184,231,1) 0%,rgba(222,129,193,1) 24%,rgba(94,6,66,1) 100%); /* IE10+ */
+background: linear-gradient(45deg,  rgba(254,184,231,1) 0%,rgba(222,129,193,1) 24%,rgba(94,6,66,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#feb8e7', endColorstr='#5e0642',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+	color: #fff;
+	
+}
+
+.btn.flat {
+	background: transparent;
+	border: 1px solid #fff;
+}
+
+.btn.flat:hover {
+	background-color: transparent;
+}
