@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folio version="{{folioVersion}}" id="{{articleID}}" lastUpdated="2013-07-18T09:38:16Z" orientation="{{orientation}}">
+    <metadata>
+    <description>{{folioDescription}}</description>
+    <magazineTitle>{{magazineTitle}}</magazineTitle>
+    <folioNumber>{{folioNumber}}</folioNumber>
+    </metadata>
+    <targetDimensions>
+    <targetDimension wideDimension="{{resolutionWidth}}" narrowDimension="{{resolutionHeight}}"/>
+    </targetDimensions>
+    <contentStacks>
+    <contentStack lastUpdated="2013-07-18T09:38:16Z" id="{{articleID}}" smoothScrolling="{{smoothScrolling}}" layout="{{layout}}" alwaysDisplayOverlays="false" orientation="{{orientation}}">
+      <content>
+        <previews>
+          <toc>toc.png</toc>
+        </previews>
+        <regions>
+          <region>
+            {{#isHorizontal}}
+            <landscapeBounds>
+              <rectangle x="0" y="0" width="{{resolutionWidth}}" height="{{resolutionHeight}}"/>
+            </landscapeBounds>
+            {{/isHorizontal}}
+            {{#isVertical}}
+            <portraitBounds>
+              <rectangle x="0" y="0" width="{{resolutionHeight}}" height="{{resolutionWidth}}"/>
+            </portraitBounds>
+            {{/isVertical}}
+            <metadata lastUpdated="2013-07-18T09:38:16Z">
+              <title>{{title}}</title>
+              <description>{{description}}</description>
+              <author>{{author}}</author>
+              <tags>{{tags}}</tags>
+              <kicker>{{kicker}}</kicker>
+              <isAdvertisement>{{isAdvertisement}}</isAdvertisement>
+              <hideFromTOC>{{hideFromTOC}}</hideFromTOC>
+              <hasAudio>{{hasAudio}}</hasAudio>
+              <hasVideo>{{hasVideo}}</hasVideo>
+              <hasSlideshow>{{hasSlideShow}}</hasSlideshow>
+            </metadata>
+          </region>
+        </regions>
+        <assets>
+          {{#isHorizontal}}
+          <asset landscape="true">
+            <assetRendition type="web" source="{{htmlFileName}}" includesOverlays="true" width="{{resolutionWidth}}" height="{{resolutionHeight}}" role="content"/>
+          </asset>
+          {{/isHorizontal}}
+          {{#isVertical}}
+          <asset landscape="false">
+            <assetRendition type="web" source="{{htmlFileName}}" includesOverlays="true" width="{{resolutionHeight}}" height="{{resolutionWidth}}" role="content"/>
+          </asset>
+          {{/isVertical}}
+        </assets>
+      </content>
+    </contentStack>
+    </contentStacks>
+</folio>

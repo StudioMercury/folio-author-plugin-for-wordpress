@@ -1,0 +1,3 @@
+[submodule "libs/folio-producer-api"]
+	path = libs/folio-producer-api
+	url = https://github.com/CoffeeAndCode/folio-producer-api
