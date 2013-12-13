@@ -2,6 +2,13 @@
 
 Folio Author is a plugin for Wordpress that allows publishers to create HTML articles and folios directly from WordPress. Using this plugin, publishers can streamline the creation of their content on Digital Publishing Suite apps across multiple devices.
 
+**Warning:** If you are looking to download the plugin to use, please use the
+following link which includes the [Folio Producer API](https://github.com/CoffeeAndCode/folio-producer-api)
+library needed to communicate with the DPS API servers.
+
+
+[Latest Download (v1.0.0)](http://studiomercury.github.io/folio-author-plugin-for-wordpress/downloads/v1.0.0.zip)
+
 
 ## Requirements
 
