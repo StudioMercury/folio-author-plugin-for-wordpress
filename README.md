@@ -1,6 +1,6 @@
 # Folio Author WordPress Plugin
 
-Folio Author is a plugin for Wordpress that allows publishers to create HTML articles and folios directly from WordPress. Using this plugin, publishers can streamline the creation of their content on Digital Publishing Suite apps across multiple devices.
+Folio Author is a plugin for WordPress that allows publishers to create HTML articles and folios directly from WordPress. Using this plugin, publishers can streamline the creation of their content on Digital Publishing Suite apps across multiple devices.
 
 **Warning:** If you are looking to download the plugin to use, please use the
 following link which includes the [Folio Producer API](https://github.com/CoffeeAndCode/folio-producer-api)
@@ -12,7 +12,7 @@ library needed to communicate with the DPS API servers.
 
 ## Requirements
 
-* [WordPress](http://wordpress.org/): 3.1+
+* [WordPress](http://wordpress.org/): 3.5+
 * [PHP](http://php.net/): 5.3+
 * [Digital Publishing Suite Enterprise Account](http://www.adobe.com/products/digital-publishing-suite-enterprise.html) with DPS API Key and Secret
 
@@ -27,26 +27,7 @@ You will now see an icon for Folio Author in your admin menu on the left. From t
 
 ## Usage
 
-After configuring the plugin you can begin creating folios. There are two main sections `Folios` and `Articles`.
-
-
-#### Folios
-
-* Create new folios
-* Create folio renditions (different folios sizes for different devices)
-
-
-#### Articles
-
-* Create a new article
-* Import articles from a specific post type
-* Manage article renditions
-
-
-## Templates
-
-We provide you with a few sample templates to use with the plugin. When you're ready to create your own templates, move a copy of the `dps-templates` folder into your current theme folder. You can use our sample templates as tutorials for creating your own.
-
+Up to date documentation about the plugin is available at [http://studiomercury.github.io/folio-author-plugin-for-wordpress](http://studiomercury.github.io/folio-author-plugin-for-wordpress)
 
 ## Authors
 
