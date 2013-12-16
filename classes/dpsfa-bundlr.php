@@ -264,7 +264,7 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
                     }
                 }else{
                     // if it can't find the attachment ID then use default image
-                    $filePath = $this->get_image( WP_PLUGIN_URL . "/adobe-folio-author-wp-plugin/assets/folio/notlinked.gif" );
+                    $filePath = $this->get_image( DPSFA_URL . "/assets/folio/notlinked.gif" );
                     $asset = array("path" => $filePath, "filename" => "notlinked.gif");
                 }
                 

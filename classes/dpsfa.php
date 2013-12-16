@@ -5,15 +5,6 @@
  *
  */
 
- /* TODOS:
-
- */
-
-// Report all PHP errors (see changelog)
-error_reporting(E_ALL);
-error_reporting(-1);
-ini_set('error_reporting', E_ALL);
-
 if( $_SERVER[ 'SCRIPT_FILENAME' ] == __FILE__ )
 	die( 'Access denied.' );
 
@@ -26,7 +17,7 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
 
         protected $modules;
 
-        const VERSION		= '1.0a';
+        const VERSION		= '1.0.0';
         const PREFIX		= 'dpsfa_';
         const DEBUG_MODE	= false;
         const PLUGIN_UPLOAD_DIR = 'dpsfa';
@@ -46,7 +37,8 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
     			'DPSFolioAuthor_Settings'               => DPSFolioAuthor_Settings::getInstance(),
                 'DPSFolioAuthor_Templates'              => DPSFolioAuthor_Templates::getInstance(),
                 'DPSFolioAuthor_Device'                 => DPSFolioAuthor_Device::getInstance(),
-                'DPSFolioAuthor_Sidecar_Importer'       => DPSFolioAuthor_Sidecar_Importer::getInstance()
+                'DPSFolioAuthor_Sidecar_Importer'       => DPSFolioAuthor_Sidecar_Importer::getInstance(),
+    			'DPSFolioAuthor_Update'	                => DPSFolioAuthor_Update::getInstance()
     		);
     	}
 
@@ -56,7 +48,7 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
 
 			wp_register_script(
 				self::PREFIX . 'admin',
-				plugins_url( 'adobe-folio-author-wp-plugin/js/admin.js' ),
+				DPSFA_URL . '/js/admin.js',
 				array( 'jquery' ),
 				self::VERSION,
 				true
@@ -64,7 +56,7 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
 
 			wp_register_style(
 				self::PREFIX .'admin',
-				plugins_url( 'css/admin.css', dirname( __FILE__ ) ),
+				DPSFA_URL . 'css/admin.css',
 				array(),
 				self::VERSION,
 				'all'
@@ -258,5 +250,6 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
     require_once(  dirname( __FILE__ ) . '/dpsfa-templates.php' );                      // Class for Template Management calls
     require_once(  dirname( __FILE__ ) . '/dpsfa-template-renderer.php' );              // Class for Template Rendering
     require_once(  dirname( __FILE__ ) . '/dpsfa-device.php' );                         // Class for Devices
-    require_once(  dirname( __FILE__ ) . '/dpsfa-sidecar-importer.php' );                         // Class for Devices
+    require_once(  dirname( __FILE__ ) . '/dpsfa-sidecar-importer.php' );               // Class for Sidecar XML Importer
+    require_once(  dirname( __FILE__ ) . '/dpsfa-update.php' );                         // Class for Checking for Updates
 }

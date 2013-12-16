@@ -190,7 +190,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
     		    if( isset($settings["automaticPreview"]) && !empty($settings["automaticPreview"]) ){
         		    $autoPreview = $this->get_auto_preview( $localID );
     		    }
-    		    $preview = !empty($autoPreview) ? array( "url" => $autoPreview["url"], "attachmentID" => $autoPreview["attachmentID"] ) : array( "url" => WP_PLUGIN_URL . "/adobe-folio-author-wp-plugin/assets/folio/toc.png", "attachmentID" => null );
+    		    $preview = !empty($autoPreview) ? array( "url" => $autoPreview["url"], "attachmentID" => $autoPreview["attachmentID"] ) : array( "url" => DPSFA_URL ."/assets/folio/toc.png", "attachmentID" => null );
     		    $this->update_article_field( $localID, 'preview', $preview["attachmentID"] );
                 return $preview;
     		}

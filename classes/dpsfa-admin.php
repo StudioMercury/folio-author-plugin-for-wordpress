@@ -65,37 +65,37 @@ if(!class_exists('DPSFolioAuthor_Admin')) {
              wp_enqueue_script( 'jquery-ui-tooltip' );
              wp_enqueue_script( 'jquery-ui-sortable' );
              
-             wp_register_script( 'table-sorter', plugins_url('/adobe-folio-author-wp-plugin/js/jquery.tablesorter.min.js') );
+             wp_register_script( 'table-sorter', DPSFA_URL . '/js/jquery.tablesorter.min.js' );
              wp_enqueue_script( 'table-sorter' );
              
-             wp_register_script( 'modernizer-new', plugins_url('/adobe-folio-author-wp-plugin/js/modernizr.min.js') );
+             wp_register_script( 'modernizer-new', DPSFA_URL . '/js/modernizr.min.js' );
              wp_enqueue_script( 'modernizer-new' );
 
-             wp_register_script( 'gumby', plugins_url('/adobe-folio-author-wp-plugin/js/gumby.min.js') );
+             wp_register_script( 'gumby', DPSFA_URL . '/js/gumby.min.js' );
              wp_enqueue_script( 'gumby' );
 
-             wp_register_script( 'dps-ajax', plugins_url('/adobe-folio-author-wp-plugin/js/ajax.js') );
+             wp_register_script( 'dps-ajax', DPSFA_URL . '/js/ajax.js' );
              wp_enqueue_script( 'dps-ajax' );
 
-             wp_register_style( 'selectizeCSS', plugins_url('/adobe-folio-author-wp-plugin/css/selectize.default.css') );
+             wp_register_style( 'selectizeCSS', DPSFA_URL . '/css/selectize.default.css' );
              wp_enqueue_style( 'selectizeCSS' );
 		}
 
 		public static function addFontAwesome(){
 		    // TODO: CHANGE THIS TO __FIL__
-            wp_register_style( 'fontAwesome', plugins_url('/adobe-folio-author-wp-plugin/css/font-awesome.min.css') );
+            wp_register_style( 'fontAwesome', DPSFA_URL . '/css/font-awesome.min.css' );
             wp_enqueue_style( 'fontAwesome' );
 
-            wp_register_style( 'adminStyles', plugins_url('/adobe-folio-author-wp-plugin/css/admin.css') );
+            wp_register_style( 'adminStyles', DPSFA_URL . '/css/admin.css' );
             wp_enqueue_style( 'adminStyles' );
 
-            wp_register_style( 'jQueryUI', plugins_url('/adobe-folio-author-wp-plugin/css/jquery-ui.css') );
+            wp_register_style( 'jQueryUI', DPSFA_URL . '/css/jquery-ui.css' );
             wp_enqueue_style( 'jQueryUI' );
 		}
 
 		public static function registerPluginPage(){
             global $menu;
-            $main_page = add_menu_page( 'Folio Author for WordPress', 'Folio Author', self::REQUIRED_CAPABILITY, 'dpsfa_page_main' ,array(__CLASS__, 'dpsfa_settings_page'), plugins_url('/adobe-folio-author-wp-plugin/assets/admin/dps-icon.png'), '53.5' );
+            $main_page = add_menu_page( 'Folio Author for WordPress', 'Folio Author', self::REQUIRED_CAPABILITY, 'dpsfa_page_main' ,array(__CLASS__, 'dpsfa_settings_page'), DPSFA_URL . '/assets/admin/dps-icon.png', '53.5' );
             $settings_page = add_submenu_page( 'dpsfa_page_main', "Issues",  "Issues" , self::REQUIRED_CAPABILITY, 'dpsfa_page_folios', __CLASS__ . '::dpsfa_folios_page' );
             $settings_page = add_submenu_page( 'dpsfa_page_main', "Articles",  "Articles" , self::REQUIRED_CAPABILITY, 'dpsfa_page_articles', __CLASS__ . '::dpsfa_articles_page' );
             $settings_page = add_submenu_page( 'dpsfa_page_main', "DPS Settings",  "Settings" , self::REQUIRED_CAPABILITY, 'dpsfa_page_settings', __CLASS__ . '::dpsfa_settings_page' );
