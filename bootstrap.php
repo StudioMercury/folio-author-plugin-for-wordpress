@@ -26,8 +26,9 @@ define( 'DPSFA_SLUG',					'dps_folio_author' );
 define( 'DPSFA_REQUIRED_PHP_VERSION',	'5.3' );	// because of get_called_class()
 define( 'DPSFA_REQUIRED_WP_VERSION',	'3.5' );	// because of wp_image_editor class
 
-define( 'DPSFA_DIR_NAME',                basename(DPSFA_DIR) );
-define( 'DPSFA_DIR',					 ABSPATH . 'wp-content/plugins/' );
+define( 'DPSFA_DIR_NAME',                basename(__DIR__) );
+define( 'DPSFA_DIR',					 ABSPATH . 'wp-content/plugins/' . DPSFA_DIR_NAME );
+define( 'DPSFA_URL',					 get_bloginfo('wpurl') . '/wp-content/plugins/' . DPSFA_DIR_NAME );
 
 define( 'DPSFA_URL',                     plugins_url(basename(dirname(__FILE__))) );
 define( 'DPSFA_ASSETS_DIR',				 DPSFA_DIR . "/assets/" );

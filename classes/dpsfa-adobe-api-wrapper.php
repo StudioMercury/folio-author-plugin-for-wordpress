@@ -51,7 +51,7 @@ if( !class_exists( 'DPSFolioAuthor_Adobe' ) )
                 "version"               => "",
                 "folioIntent"           => "PortraitOnly", // `LandscapeOnly`, `PortraitOnly`, `Both`
                 "coverDate"             => "",
-                "targetViewer"          => "26.00.00",
+                "targetViewer"          => "22.00.00",
                 "filters"               => "",
                 "createDate"            => "",
                 "modifyDate"            => "",
@@ -84,7 +84,7 @@ if( !class_exists( 'DPSFolioAuthor_Adobe' ) )
                 "smoothScrolling"               => "Always", // `Never`, `Landscape`, `Portrait`, `Always`
                 "sortNumber"                    => 0,
                 "tags"                          => "",
-                "targetViewer"                  => "26.00.00",
+                "targetViewer"                  => "22.00.00",
                 "title"                         => "",
                 "uncompressedFolioSize"         => 0,
                 "userData"                      => "",
@@ -175,11 +175,17 @@ if( !class_exists( 'DPSFolioAuthor_Adobe' ) )
 		    }
     		foreach( $adobeMeta as $key => $value ){
         		if( array_key_exists($key,$meta) ){
+        		    // clean booleans
         		    if( gettype($value) == "boolean" ){ $meta[$key] = filter_var($meta[$key], FILTER_VALIDATE_BOOLEAN);}
-        		    if( $key == "targetViewer" && empty($meta[$key]) ){ $meta[$key] = "20.00.00"; }
+        		    // make sure target viewer has a value and it's greater than the minimum viewer
+        		    if( $key == "targetViewer" && ( empty($meta[$key]) || floatval($meta["targetViewer"]) < floatval($adobeMeta["targetViewer"]) ) ){ $meta[$key] = $adobeMeta["targetViewer"]; }
             		settype($meta[$key], gettype($value));
         		}
-    		}
+    		}   
+		    if( strtolower($type) == "article" ){ 
+		        if($meta["sortNumber"] > 0){ $meta["sortOrder"] = $meta["sortNumber"]; }
+		        $meta["articleName"] = $meta["name"];
+		    }
     		return $meta;
 		}
 
@@ -202,7 +208,7 @@ if( !class_exists( 'DPSFolioAuthor_Adobe' ) )
     		     $return = $this->client->execute('get_folios_metadata');
 		    }
 
-            $errorMessage = "Could not get folio metata";
+            $errorMessage = "Could not get folio metadata";
 		    $check = $this->check_adobe_response($return, $errorMessage);
             if( !is_wp_error($check) ){
                 return $return->response; // return the response
@@ -384,9 +390,9 @@ if( !class_exists( 'DPSFolioAuthor_Adobe' ) )
 		public function update_article_meta( $article_id, $folio_id, $options = array() ){
 		    $options["article_id"] = $article_id;
 		    $options["folio_id"] = $folio_id;
-            $cleanOptions = $this->clean_adobe_meta( $options, "article" );
-    		$return = $this->client->execute('update_article_metadata', $cleanOptions);
-
+            //$cleanOptions = $this->clean_adobe_meta( $options, "article" );
+    		$return = $this->client->execute('update_article_metadata', $options);
+    		
     		$errorMessage = "Could not update the article metadata";
 		    $check = $this->check_adobe_response($return, $errorMessage);
             if( !is_wp_error($check) ){

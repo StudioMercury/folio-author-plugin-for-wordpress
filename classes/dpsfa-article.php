@@ -38,13 +38,13 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		public function article( $localID ){
 		    if( empty($localID) ){
                 return new WP_Error('broke', __("No ID supplied"));
-		    }else if( filter_var($localID, FILTER_VALIDATE_INT) !== FALSE ){
-				$articlePost = get_post($localID);
-				if( !$articlePost ){ return new WP_Error('broke', __("Article does not exist for local article ID: $localID")); }
-			}else{
+		    }else if( filter_var($localID, FILTER_VALIDATE_INT) == FALSE ){
 				$localID = $this->get_local_from_hosted( $localID );
-				if( !$localID ){ return new WP_Error('broke', __("Article does not exist for hosted ID")); }
+				if( !$localID ){ return new WP_Error('broke', __("Article does not exist for hosted ID: $localID")); }
 			}
+			
+			$articlePost = get_post($localID);
+            if( !$articlePost ){ return new WP_Error('broke', __("Article does not exist for local article ID: $localID")); }
 
 		    // ARTICLE SETUP
 		    $article = array(
@@ -57,7 +57,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             		        "renditions"    =>  $this->get_article_field( $localID, 'renditions' ),     // sub articles (renditions) / duplicates just different sizes
             		        "folio"         =>  $this->get_article_field( $localID, 'folio' ),          // article's attached folio
             		        "status"        =>  $this->get_article_field( $localID, 'status' ),         // status of article
-            		        "modifyDate"    =>  $this->get_article_field( $localID, 'modifyDate' ),     // article modified date
+            		        "modifyDate"    =>  $articlePost->post_modified,                            // article modified date
                        );
             if( $this->is_rendition($localID) ){
         		$article["hostedID"] 	    =   $this->get_article_field( $localID, 'hostedID' );       // article ID on adobe hosting
@@ -121,16 +121,16 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		public function get_article_field( $localID, $field ){
     		switch($field){
         		case 'preview'          : return $this->get_article_preview($localID);
-        		case 'hostedID'         : return get_post_meta($localID, $this->articlePrefix . "id", true);
-        		case 'name'             : return get_post_meta($localID, $this->articlePrefix . "name", true);
-                case 'template'         : return get_post_meta($localID, $this->articlePrefix . "template", true);
-                case 'meta'             : return $this->get_article_meta($localID);
-                case 'position'         : return get_post_meta($localID, $this->articlePrefix . "sortNumber", true);
-                case 'renditions'       : return $this->get_article_renditions($localID);
-                case 'folio'            : return get_post_meta($localID, $this->articlePrefix . "folio", true);
-                case 'status'           : return $this->get_article_status($localID);
-                case 'modifyDate'       : return get_post_meta($localID, $this->articlePrefix . "modifyDate", true);
-                case 'origin'           : return get_post_meta($localID, $this->articlePrefix . "origin", true);
+        		case 'hostedID'         : return get_post_meta($localID, $this->articlePrefix . "id", true);break;
+        		case 'name'             : return get_post_meta($localID, $this->articlePrefix . "name", true);break;
+                case 'template'         : return get_post_meta($localID, $this->articlePrefix . "template", true);break;
+                case 'meta'             : return $this->get_article_meta($localID);break;
+                case 'position'         : return get_post_meta($localID, $this->articlePrefix . "sortNumber", true);break;
+                case 'renditions'       : return $this->get_article_renditions($localID);break;
+                case 'folio'            : return get_post_meta($localID, $this->articlePrefix . "folio", true);break;
+                case 'status'           : return $this->get_article_status($localID);break;
+                case 'modifyDate'       : return get_post_meta($localID, $this->articlePrefix . "modifyDate", true);break;
+                case 'origin'           : return get_post_meta($localID, $this->articlePrefix . "origin", true);break;
                 default: return  new WP_Error('broke', __("No fields found for $field"));
     		}
 		}
@@ -146,21 +146,27 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		*/
 		public function update_article_field( $localID, $field, $value ){
     		switch($field){
-                case 'preview'              : return update_post_meta($localID, $this->articlePrefix . "preview", $value);
-                case 'name'                 : return update_post_meta($localID, $this->articlePrefix . "name", $value);
-                case 'template'             : return $this->update_article_template($localID, $value);
-                case 'meta'                 : return $this->update_article_meta($localID, $value);
-                case 'position'             : return (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "sortNumber") : update_post_meta($localID, $this->articlePrefix . "sortNumber", $value);
-                case 'folio'                : return (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "folio") : update_post_meta($localID, $this->articlePrefix . "folio", $value);
-                case 'status'               : return $this->update_article_status($localID, $value);
-                case 'hostedID'             : return (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "id") : update_post_meta($localID, $this->articlePrefix . "id", $value);
-                case 'modifyDate'           : return (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "modifyDate") : update_post_meta($localID, $this->articlePrefix . "modifyDate", $value);
-                case 'origin'               : return update_post_meta($localID, $this->articlePrefix . "origin", $value);
-                case 'origin-tags'          : return update_post_meta($localID, $this->articlePrefix . "origin-tags", $value);
-                case 'origin-categories'    : return update_post_meta($localID, $this->articlePrefix . "origin-categories", $value);
+                case 'preview'              : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "preview") : update_post_meta($localID, $this->articlePrefix . "preview", $value);break;
+                case 'name'                 : $updated = update_post_meta($localID, $this->articlePrefix . "name", $value);break;
+                case 'template'             : $updated = $this->update_article_template($localID, $value);break;
+                case 'meta'                 : $updated = $this->update_article_meta($localID, $value);break;
+                case 'position'             : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "sortNumber") : update_post_meta($localID, $this->articlePrefix . "sortNumber", $value);break;
+                case 'folio'                : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "folio") : update_post_meta($localID, $this->articlePrefix . "folio", $value);break;
+                case 'hostedID'             : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "id") : update_post_meta($localID, $this->articlePrefix . "id", $value);break;
+                case 'modifyDate'           : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "modifyDate") : update_post_meta($localID, $this->articlePrefix . "modifyDate", $value);break;
+                case 'origin'               : $updated = update_post_meta($localID, $this->articlePrefix . "origin", $value);break;
+                case 'origin-tags'          : $updated = update_post_meta($localID, $this->articlePrefix . "origin-tags", $value);break;
+                case 'origin-categories'    : $updated = update_post_meta($localID, $this->articlePrefix . "origin-categories", $value);break;
                 default: return  new WP_Error('broke', __("No fields found for $field"));
     		}
+    		// update folio mod date for each section
+    		if( !empty($updated) ){ $this->update_field_modified_date($localID, $field); }
 		}		
+		
+		public function update_field_modified_date( $localID, $field ){
+    		$articlePost = get_post($localID);
+            update_post_meta($localID, $field . "_mod", $articlePost->post_modified);
+		}
 		
 		public function update_article_template( $localID, $value ){
 			// Get default template
@@ -229,11 +235,15 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		}
 
 		public function get_article_status( $localID ){
-    		return ""; // TODO FIGURE OUT STATUS
-		}
-
-		public function update_article_status( $localID, $value ){
-    		return ""; // TODO FIGURE OUT STATUS
+		    return array(
+		        "meta" =>       get_post_meta($localID, "meta" . "_mod", true),
+		        "device" =>     get_post_meta($localID, "device" . "_mod", true),
+		        "published" =>  get_post_meta($localID, "hostedID" . "_mod", true),
+		        "preview" =>    get_post_meta($localID, "preview" . "_mod", true),
+		        "template" =>   get_post_meta($localID, "template" . "_mod", true),
+		        "position" =>   get_post_meta($localID, "position" . "_mod", true),
+		        "name" =>       get_post_meta($localID, "name" . "_mod", true),
+		    );
 		}
 
 		/*
@@ -325,11 +335,12 @@ if(!class_exists('DPSFolioAuthor_Article')) {
                 }
             }
             
-		    // clean up dates to match what adobe expects
+            $updates = false;
             foreach( $mergedMeta as $key => $value ){
-                update_post_meta($localID, $this->articlePrefix . $key, $value);
+                $updated = update_post_meta($localID, $this->articlePrefix . $key, $value);
+                if( !empty($updated) ){ $updates = true; }
             }
-    		return true;
+    		return $updates;
 		}
 
 		/*
@@ -801,7 +812,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             $query = new WP_Query( $args );
             $article = $query->get_posts();
             if( $query->have_posts() ){
-                $the_query->the_post();
+                $query->the_post();
                 return get_the_ID();
             }else{
                 return false;
@@ -858,7 +869,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		public function update_positions( $articles ){
             $counter = 1;
             foreach( $articles as $article ){
-                $this->update_article_field( $article, 'position', $counter );
+                $this->update_article_field( $article, 'position', ($counter*100) );
                 $counter++;
             }
             return true;
@@ -913,53 +924,58 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		/*
         * Pushes an update for a specific folio to Adobe
         *
-        * @param    array         $folio array
+        * @param    array         $article - article array
+        * @param    array         $folio - folio array
+        * @param    array         $meta - array of metadata to update. if empty it will update all metadata fields from the article 
+        * @param    boolean       $update - whether to update the article after the metadata has been pushed to the cloud
         * @return	array         returns response from adobe
         *
         */
-        public function push_article_meta( $article ){
-            $adobe = DPSFolioAuthor_Adobe::getInstance();
-            unset($article["meta"]["id"]);
-            $return = $adobe->update_article_meta( $article["hostedID"], $article["meta"] );
+        public function push_article_meta( $article, $folio, $meta, $update = true ){
+            // if options is empty use the article's meta
+            if(empty($meta)){ $meta = $article["meta"]; }
+            // if the ID exists in the meta it will be removed
+            if(!empty($meta["id"])){ unset($meta["id"]); }
+            // if there is a targer viewer, replace it with the folio's viewer
+            if(!empty($meta["targetViewer"])){$meta["targetViewer"] = $folio["meta"]["targetViewer"]; } // set target viewer to be the folio's viewer
             
-            if(!is_wp_error($return)){
-                $this->update_folio_field( $article["localID"], "meta", (array)$return->articleInfo );
+            $adobe = DPSFolioAuthor_Adobe::getInstance();
+            $return = $adobe->update_article_meta( $article["hostedID"], $folio["hostedID"], $meta);
+            if( !is_wp_error($return) && !empty($update) ){
+                $this->update_article_field( $article["localID"], "meta", (array)$return->articleInfo );
             }
             return $return;
         }
 
         /*
-        * Pushes an update for a specific article to Adobe
+        * Pushes an article to Adobe
         *
         * @param    array         $localID wordpress ID of the local article to push to adobe
-        * @return	array         returns response from adobe
+        * @return	array         returns hosted ID of the article or wp error
         *
         */
 		public function push_article( $localID ){
+		    // get article as article array
 			$article = $this->article( $localID );
-            $bundler = DPSFolioAuthor_Bundlr::getInstance();
-            $bundledArticle = $bundler->bundle( $article ); // creates a zip / folio of the whole article and returns the path to the zip
 
 		    // get the associated folio for the article
             $folioService = DPSFolioAuthor_Folio::getInstance();
             $folio = $folioService->folio( $article["folio"] );
+            
+            // preflight article to make sure it's clear to upload to hosting
+            $return = $this->article_preflight($article, $folio);
+		    if(is_wp_error($return)){ return $return; }
 
-		    $adobe = DPSFolioAuthor_Adobe::getInstance();
-
-    		// delete the old article
-    		if( !empty($article["hostedID"]) ){
-        		$return = $adobe->delete_article( $article["hostedID"], $folio["hostedID"]);
-                if(is_wp_error($return)){
-                    $edits = $this->sync_articles_in_folio($folio);
-                    return $return;
-        		}
-    		}
-            // push the new article
+            // bundle the article into a .folio
+            $bundler = DPSFolioAuthor_Bundlr::getInstance();
+            $bundledArticle = $bundler->bundle( $article ); // creates a zip / folio of the whole article and returns the path to the zip
             clearstatcache();
-            // check for empty name and put localID in
-            if( empty( $article["meta"]["name"] )){ $article["meta"]["name"] = time(); }
+            
+            // push article to hosting
+            $adobe = DPSFolioAuthor_Adobe::getInstance();
     		$return = $adobe->create_article( $folio["hostedID"], $bundledArticle, $article["meta"] );
             
+            // verify push was successful and update the local article
             if( !is_wp_error($return) ){
                 $hostedID = $return->articleInfo->id;
                 $this->update_article_field($localID, 'hostedID', $hostedID);
@@ -970,32 +986,134 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             }
 		}
 		
-		public function sync_articles_in_folio( $folio ){
-    		$return = $this->get_articles_from_adobe( $folio );
-            
-            if(!is_wp_error($return)){ 
-                $adobeArticles = $return->articles;
-            }else{ return $return; }
-            
-            foreach($adobeArticles as $adobeArticle){
-            
+		/*
+        * Article preflight
+        * makes sure everything is clear before an article can be pushed to the cloud
+        *
+        * @param    array         $article - article array
+        * @param    array         $folio - folio array
+        * @return	array         returns true if everything is clear or wp_error if something went wrong
+        *
+        */
+		public function article_preflight( $article, $folio ){
+		    // get current articles in the folio
+		    $returnedArticles = $this->get_articles_from_adobe($folio);
+            $hostedArticles = !empty($returnedArticles->articles) ? $returnedArticles->articles : array();
+		    
+		    // delete existing article before uploading new one
+		    $foundArticle = $this->article_id_exists_in_hosting($article, $hostedArticles);
+    		if( !empty($article["hostedID"]) && $foundArticle !== false ){
+		        $return = $this->delete_old_article($article, $folio);
+                if(is_wp_error($return)){ return $return; }
+                unset($hostedArticles[$foundArticle]);
             }
+		    
+		    // check article name exists in wordpress and generate article name if it doesn't
+            $articleName = $this->article_name_exists_in_hosting($article, $hostedArticles);
+            $article["meta"]["name"] = empty($articleName) ? $article["meta"]["name"] : $articleName . "-copy-" . time();
             
-            $folioArticles = $this->get_articles( null, $folio );
-            $edits = array(); // initial array for created folios
-            foreach( $folioArticles as $article ){
-                $published = false; 
-                foreach($adobeArticles as $adobeArticle){
-                    if( $adobeArticle->id == $article["hostedID"] ){
-                        $published = true;
-                    }
-                }
-                if(!$published){ 
-                    $this->update_article_field($article["localID"], 'hostedID', "");
-                    array_push( $edits, array("unpublished" => $article["localID"]) );
-                }
-            }
-            return $edits;
+            // check article position, if it already exists update the existing article to make space for the one being uploaded
+            $return = $this->verify_article_position($article, $folio, $hostedArticles);
+		    if(is_wp_error($return)){ return $return; }
+		    
+		    return true;
+		}
+
+		/*
+        * Delete Old Article
+        * removes an old article in the cloud
+        *
+        * @param    array         $article - article array
+        * @param    array         $folio - folio array
+        * @return	boolean       returns true if successfully deleted (or nothing to delete) or wp_error if something went wrong
+        *
+        */
+		public function delete_old_article($article, $folio){
+            $adobe = DPSFolioAuthor_Adobe::getInstance();
+    		$return = $adobe->delete_article( $article["hostedID"], $folio["hostedID"]);
+            if(is_wp_error($return)){ return $return; }
+            else{ return true; }
+		}
+		
+		/*
+        * Article ID Exists In Hosting
+        * checks a list of hosted articles of a folio to see if ID exists 
+        *
+        * @param    array         $article - article array
+        * @param    array         $hostedArticles - array of hosted articles
+        * @return	boolean       returns true if id exists or false if it doesn't
+        *
+        */
+		public function article_id_exists_in_hosting( $article, $hostedArticles ){
+    		if(empty($article["hostedID"])){ return false; }
+    		foreach($hostedArticles as $index => $hostedArticle){
+        		if( $article["hostedID"] == $hostedArticle->id){
+            		return $index;
+        		} 
+    		}
+    		return false;
+		}
+		
+		/*
+        * Article Name Exists In Hosting
+        * checks a list of hosted articles of a folio to see if name exists 
+        *
+        * @param    array         $article - article array
+        * @param    array         $hostedArticles - array of hosted articles
+        * @return	boolean       returns true if name exists or false if it doesn't
+        *
+        */
+		public function article_name_exists_in_hosting( $article, $hostedArticles ){
+    		$name = empty( $article["meta"]["name"] ) ? $article["localID"] : $article["meta"]["name"];
+    		foreach($hostedArticles as $hostedArticle){
+        		if( $name == $hostedArticle->name){
+            		return $name;
+        		} 
+    		}
+    		return false;
+		}
+		
+		/*
+        * Verify Article Position
+        * checks if existing folio has same sortOrder, if one exists that folio will be changed to it's current position +1 
+        *
+        * @param    array         $article - article array
+        * @param    array         $folio - folio array
+        * @param    array         $hostedArticles - array of hosted articles
+        * @return	boolean       returns true if article's sortOrder (position) is clear
+        *
+        */
+		public function verify_article_position( $article, $folio, $hostedArticles ){            
+    		$position = $article["position"];
+    		$updatedID = $this->article_position_exist($position, $hostedArticles);
+    		// if there's a folio with the same article position - update that folio to a new position
+    		if( $updatedID ){
+    		    // keep adding +1 to the folio position until a free position exists
+    		    while( $this->article_position_exist($position, $hostedArticles) ){
+        		    $position++;
+    		    }
+    		    // when a free position has been found, update that folio position in the cloud to make room for the new folio
+                return $this->push_article_meta( $this->article($updatedID), $folio, array("sortOrder" => $position), false );
+    		}
+    		return true;
+		}
+		
+		/*
+        * Article Position Exists
+        * checks if existing folio has same sortOrder, if one exists that folio will be changed to it's current position +1 
+        *
+        * @param    int           $position - position as int
+        * @param    array         $articles - array of hosted articles
+        * @return	boolean       returns true if article's sortOrder (position) is clear
+        *
+        */
+		public function article_position_exist($position, $articles){
+    		foreach($articles as $article){
+        		if($position == $article->articleMetadata->sortNumber){
+            		return $article->id;
+        		}
+    		}
+    		return false;
 		}
 		
 		public function registerHookCallbacks(){}
@@ -1004,7 +1122,6 @@ if(!class_exists('DPSFolioAuthor_Article')) {
        	public function upgrade( $dbVersion = 0 ){}
        	protected function isValid( $property = 'all' ){}
     	public function init(){}
-
 
     } // END class DPSFolioAuthor_Article
 }

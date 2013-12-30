@@ -58,13 +58,13 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
         		        "hostedID"      =>  $this->get_folio_field( $localID, 'hostedID' ),             // folio ID on adobe hosting
         		        "type"          =>  ($folioPost->post_parent > 0) ? "rendition" : "parent",     // type of folio: parent or rendition
         		        "linked"    	=>  $this->is_folio_linked( $localID ),                         // boolean if folio is linked and editable in WP
-        		        "status"    	=>  $this->get_folio_field( $localID, 'status' ),               // published status on adobe hosting
+        		        "status"    	=>  $this->get_folio_field( $localID, 'status' ),               // array of mod dates of fields
                         "renditions"    =>  $this->get_folio_field( $localID, 'renditions' ),           // array of child folios (renditions)
         		        "meta"      	=>  $this->get_folio_field( $localID, 'meta' ),                 // farray of adobe metadata
         		        "covers"        =>  $this->get_folio_field( $localID, 'covers' ),               // cover images for the folio
         		        "account"       =>  $this->get_folio_field( $localID, 'account' ),              // adobe hosting account
         		        "parent"        =>  $folioPost->post_parent,                                    // local ID of wordpress parent
-        		        "device"        =>  $this->get_folio_field( $localID, 'device' )                // target device meta
+        		        "device"        =>  $this->get_folio_field( $localID, 'device' ),               // target device meta
         		     );
             return $folio;
 		}
@@ -120,13 +120,13 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
 		*/
 		public function get_folio_field( $localID, $field ){
     		switch($field){
-        		case 'device'       : return $this->get_folio_device($localID);
-                case 'renditions'   : return $this->get_folio_renditions($localID);
-                case 'meta'         : return $this->get_folio_meta($localID);
-                case 'hostedID'     : return get_post_meta($localID, $this->folioPrefix . "folioID", true);
-                case 'status'       : return $this->get_post_status($localID);
-                case 'covers'       : return $this->get_folio_covers($localID);
-                case 'account'      : return $this->get_folio_account( $localID );
+        		case 'device'       : return $this->get_folio_device($localID);break;
+                case 'renditions'   : return $this->get_folio_renditions($localID);break;
+                case 'meta'         : return $this->get_folio_meta($localID);break;
+                case 'hostedID'     : return get_post_meta($localID, $this->folioPrefix . "folioID", true);break;
+                case 'status'       : return $this->get_folio_status($localID);break;
+                case 'covers'       : return $this->get_folio_covers($localID);break;
+                case 'account'      : return $this->get_folio_account( $localID );break;
                 default: return  new WP_Error('broke', __("No fields found for $field"));
     		}
 		}
@@ -142,12 +142,18 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
 		*/
 		public function update_folio_field( $localID, $field, $value ){
     		switch($field){
-                case 'device'       : return update_post_meta($localID, $this->folioPrefix . "device", $value);
-                case 'meta'         : return $this->update_folio_meta($localID, $value);    // META VALUE TAKES AN ARRAY TO MERGE
-                case 'hostedID'     : return $this->update_folio_hosted_id($localID, $value);
-                case 'status'       : return update_post_meta($localID, $this->folioPrefix . "status", $value);
+                case 'device'       : $updated = update_post_meta($localID, $this->folioPrefix . "device", $value);break;
+                case 'meta'         : $updated = $this->update_folio_meta($localID, $value);break;    // META VALUE TAKES AN ARRAY TO MERGE
+                case 'hostedID'     : $updated = $this->update_folio_hosted_id($localID, $value);break;
                 default: return  new WP_Error('broke', __("No fields found for $field"));
     		}
+    		// update folio mod date for each section
+    		if( !empty($updated) ){ $this->update_field_modified_date($localID, $field); }
+		}
+		
+		public function update_field_modified_date( $localID, $field ){
+    		$folioPost = get_post($localID);
+            update_post_meta($localID, $field . "_mod", $folioPost->post_modified);
 		}
 
 		// Orientation: `horizontal` or `vertical`
@@ -166,8 +172,12 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
             );
 		}
 
-		public function get_post_status( $localID ){
-    		return ""; // TODO FIGURE OUT STATUS
+		public function get_folio_status( $localID ){
+		    return array(
+		        "meta" => get_post_meta($localID, "meta" . "_mod", true),
+		        "device" => get_post_meta($localID, "device" . "_mod", true),
+		        "published" => get_post_meta($localID, "hostedID" . "_mod", true),
+		    );
 		}
 		
 		public function get_folio_account(){
@@ -285,10 +295,12 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
             //if folio is not a rendition (parent) only update parent fields
             if(	!$this->is_rendition( $localID ) ){ $finalMeta = array_intersect_key($finalMeta,$this->parentMeta()); }
             // save all post meta into wordpress
+            $updates = false;
             foreach( $finalMeta as $key => $value ){
-                update_post_meta($localID, $this->folioPrefix . $key, $value);
+                $updated = update_post_meta($localID, $this->folioPrefix . $key, $value);
+                if( !empty($updated) ){ $updates = true; }
             }
-    		return true;
+    		return $updates;
 		}
 
 		/*
