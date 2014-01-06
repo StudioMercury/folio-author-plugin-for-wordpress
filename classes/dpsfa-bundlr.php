@@ -200,7 +200,7 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
     
     	private function get_article_index_file( $article, $htmlString ){
     	    $file = tempnam($this->tmpDir,"index");
-            $html = $this->update_html_assets($htmlString);
+            $html = $this->update_html_assets($article, $htmlString);
     	    $result = file_put_contents($file, $html["content"]);
             return array(
                 "file"    => $file,
@@ -217,21 +217,48 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
             }catch(Exception $e){ return false; }
         }
     
-        private function get_attachment_from_imageURL( $URL ){
-            global $wpdb;
-            $prefix = $wpdb->prefix;
-            $attachment = $wpdb->get_col($wpdb->prepare("SELECT ID FROM " . $prefix . "posts" . " WHERE guid='%s';", $URL )); 
+        private function get_attachment_from_imageURL( $URL, $articleID ){
+            $attachment = $this->search_wp_for_attachment($URL);
             if( count($attachment) > 0){
-                $image = wp_get_attachment_image_src( $attachment[0], 'full' );
-        		if( !empty($image) ){
-            		return $attachment[0];
-        		}else{
-                    return false;
-        		}              		
+            	return $attachment[0];
+            }else{
+	            // No image found - it could be that it was linking to a rendtion or it's on a different server
+                $ext = pathinfo($URL, PATHINFO_EXTENSION);
+                $imageURL = preg_replace('/-(\d{1,})x(\d{1,}).'.$ext.'/', '', $URL);
+                
+                $newext = pathinfo($imageURL, PATHINFO_EXTENSION);
+                if( empty($newext) ){
+                	$imageURL .= "." . $ext;
+                }
+				$attachment = $this->search_wp_for_attachment($imageURL);
+                
+                // last check, if it still can't find a local attachement, it might be on another server
+                if( count($attachment) > 0 ){
+	                return $attachment[0];
+                }else{
+                	// try downloading the image manually from the linked server
+                	$tmp = download_url( $URL );
+                	preg_match('/[^\?]+\.(jpg|JPG|jpe|JPE|jpeg|JPEG|gif|GIF|png|PNG)/', $URL, $matches);
+                	$file_array['name'] = basename($matches[0]);
+                	$file_array['tmp_name'] = $tmp;
+                	if ( !is_wp_error( $tmp ) ) {
+                		$attachmentID = media_handle_sideload( $file_array, $articleID );
+                        if(!is_wp_error($attachmentID)){
+                        	return $attachmentID;
+                        }
+                	}
+                }
             }
+            return false;
+        }
+        
+        private function search_wp_for_attachment( $URL ){
+	        global $wpdb;
+            $prefix = $wpdb->prefix;
+            return $wpdb->get_col($wpdb->prepare("SELECT ID FROM " . $prefix . "posts" . " WHERE guid='%s';", $URL )); 
         }
     
-        private function update_html_assets($html) {
+        private function update_html_assets($article, $html) {
             $assets = array();
             
             $images = $html->find('img');
@@ -240,7 +267,7 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
             
             // update image references to be local for folio
             foreach ($images as $image) {
-                $attachmentID = $this->get_attachment_from_imageURL($image->src);
+                $attachmentID = $this->get_attachment_from_imageURL($image->src, $article["localID"]);
                 if($attachmentID){
                     // try to get attachment image
                     $imagePath = get_attached_file($attachmentID);
