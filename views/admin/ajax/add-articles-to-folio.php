@@ -10,6 +10,7 @@
     
     <div class="text-center">
         <div class="medium default btn"><a data-action="select_all" data-boxes="#posts-list">Check All</a></div>
+        <div class="medium primary btn"><a class="" data-action="add_articles_to_folio">Add Articles To Folio</a></div>
     </div>    
     
     <ul class="text-left checkbox-list" id="posts-list">

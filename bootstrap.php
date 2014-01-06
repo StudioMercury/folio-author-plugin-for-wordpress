@@ -30,7 +30,6 @@ define( 'DPSFA_DIR_NAME',                basename(__DIR__) );
 define( 'DPSFA_DIR',					 ABSPATH . 'wp-content/plugins/' . DPSFA_DIR_NAME );
 define( 'DPSFA_URL',					 get_bloginfo('wpurl') . '/wp-content/plugins/' . DPSFA_DIR_NAME );
 
-define( 'DPSFA_URL',                     plugins_url(basename(dirname(__FILE__))) );
 define( 'DPSFA_ASSETS_DIR',				 DPSFA_DIR . "/assets/" );
 define( 'DPSFA_ASSETS_URL',	             esc_url( trailingslashit( plugins_url( '/assets/admin/', __FILE__ )) ) );
 

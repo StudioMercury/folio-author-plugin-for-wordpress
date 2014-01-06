@@ -38,7 +38,8 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
                 'DPSFolioAuthor_Templates'              => DPSFolioAuthor_Templates::getInstance(),
                 'DPSFolioAuthor_Device'                 => DPSFolioAuthor_Device::getInstance(),
                 'DPSFolioAuthor_Sidecar_Importer'       => DPSFolioAuthor_Sidecar_Importer::getInstance(),
-    			'DPSFolioAuthor_Update'	                => DPSFolioAuthor_Update::getInstance()
+    			'DPSFolioAuthor_Update'	                => DPSFolioAuthor_Update::getInstance(),
+    			'DPSFolioAuthor_Sync'	                => DPSFolioAuthor_Sync::getInstance()
     		);
     	}
 
@@ -252,4 +253,6 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
     require_once(  dirname( __FILE__ ) . '/dpsfa-device.php' );                         // Class for Devices
     require_once(  dirname( __FILE__ ) . '/dpsfa-sidecar-importer.php' );               // Class for Sidecar XML Importer
     require_once(  dirname( __FILE__ ) . '/dpsfa-update.php' );                         // Class for Checking for Updates
+    require_once(  dirname( __FILE__ ) . '/dpsfa-sync.php' );                           // Class for Syncing changes among articles and folios
+    
 }

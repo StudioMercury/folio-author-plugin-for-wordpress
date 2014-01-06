@@ -377,7 +377,7 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
 		*
 		*/
 		public function update_folio_from_post( $localID ){
-            $folioPOST = $_POST[ $this->folioPostType  ];
+            $folioPOST = isset($_POST[$this->folioPostType]) ? $_POST[$this->folioPostType] : array();
             foreach( $folioPOST as $key => $value ){
                 update_post_meta($localID, $this->folioPrefix . $key, $value);
             }
@@ -396,6 +396,13 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
     			    $attachementID = media_handle_upload( $this->folioPrefix . "cover_h", $localID);
     			    if(!is_array($attachementID)){ $this->update_folio_covers( $localID, $attachementID, "horizontal"); }
 			    }
+			}
+			
+			// ARTICLE POSITIONS
+			if(isset($folioPOST["articles"])){
+    			$articleService = DPSFolioAuthor_Article::getInstance();
+    			$articles = $folioPOST["articles"];
+    			$articleService->update_positions( explode(",",$articles) );
 			}
 			
 			// SIDECAR

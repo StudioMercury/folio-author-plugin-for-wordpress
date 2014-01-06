@@ -7,12 +7,12 @@
 
 <BR/>
 <center>
-    <?php $preview = isset($article["preview"]) ? $article["preview"]["attachmentID"] : ""; ?>
+    <?php $preview = isset($article["preview"]["url"]) ? $article["preview"]["attachmentID"] : ""; ?>
     <?php $image = wp_get_attachment_image_src($preview, array(250,250)); ?>
     
     <div class="fileupload <?php echo (!empty($preview)) ? "fileupload-exists" : "fileupload-new"; ?>" data-provides="fileupload">
-      <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;"><img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=No+TOC+Preview" /></div>
-      <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;">
+      <div class="fileupload-new thumbnail" style="width: 200px; height: auto;"><img src="http://www.placehold.it/250x250/EFEFEF/AAAAAA&text=No+TOC+Preview" /></div>
+      <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: auto; line-height: 20px;">
         <img src="<?php echo is_array($image) ? $image[0] : "http://placehold.it/250x250&text=250+x+250"; ?>">
       </div>
       <div>

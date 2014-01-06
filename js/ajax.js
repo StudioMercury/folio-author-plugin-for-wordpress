@@ -137,7 +137,30 @@ underscore.extend(DPSFolioAjax.prototype, {
 	show_import_sidecar: function( data ){
 	    jQuery( data.uploader ).show();
 	},
-
+	
+	open_box_rendition_sync: function( data ){
+	    this.openDialog();
+	    this.updateDialogHead( "Sync Renditions" );
+	    data.action = "get_ajax_form";
+	    data.form = "rendition_sync";
+	    onSuccess = jQuery.proxy(function(response){
+	        this.updateDialogFromAjax( response );
+	    },this);
+	    this.request(data, onSuccess);
+	},
+	
+	sync_renditions: function( data ){
+    	data = this.dialog.find("form").serialize();
+	    onSuccess = jQuery.proxy(function(response){
+            location.reload();  // articles are done. rendition is pushed
+	    },this);
+	    onError = jQuery.proxy(function(response){
+            message = 'Could not sync renditions.';
+	        this.handle_errors( response, message );
+	    },this);
+	    this.request(data, onSuccess, onError);
+	},
+	
 	open_box_new_folio: function( data ){
 	    this.openDialog();
 	    this.updateDialogHead( "Create a new folio" );
@@ -232,6 +255,10 @@ underscore.extend(DPSFolioAjax.prototype, {
 	        this.handle_errors( response, message );
 	    },this);
 	    this.request(data, onSuccess, onError);
+	},
+	
+	push_article_meta: function( article ){
+    	
 	},
 	
 	push_single_article: function( data ){
@@ -743,7 +770,8 @@ jQuery( document ).ready( function(){
       placeholder: "ui-state-highlight",
       forcePlaceholderSize: true,
       update: function(event, ui) {
-           DPSAjax.update_article_positions( jQuery(this).sortable('toArray') );
+           articles = jQuery(this).sortable('toArray');
+           jQuery("#articleList").val(articles.join(","));
       }
     });
     jQuery( ".sortable.articles" ).disableSelection();

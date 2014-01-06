@@ -3,6 +3,7 @@
 	http://localhost:8888/gather_wordpress/wp-content/plugins/dps-folio-author/css/admin.css?ver=3.6
 	http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.7.1
 	http://www.rd.com.php53-19.dfw1-2.websitetestlink.com/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.6
+	http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.8
 */
 
 @charset "UTF-8";
@@ -18,9 +19,12 @@
 
 body .gumby { color: #515151; }
 
+
+
 .folio-author_page_dpsfa_page_settings *,
 .folio-author_page_dpsfa_page_folios *,
-.folio-author_page_dpsfa_page_articles * {
+.folio-author_page_dpsfa_page_articles *,
+.post-type-dpsfa_folio * {
 	-webkit-box-sizing: border-box; 
 	-moz-box-sizing: border-box;   
 	box-sizing: border-box; 	
@@ -29,7 +33,8 @@ body .gumby { color: #515151; }
 
 .folio-author_page_dpsfa_page_settings #wpbody div,
 .folio-author_page_dpsfa_page_folios #wpbody div,
-.folio-author_page_dpsfa_page_articles #wpbody div {
+.folio-author_page_dpsfa_page_articles #wpbody div,
+.post-type-dpsfa_folio #wpbody div  {
 	font-family: "Open Sans"; 
 	font-weight: 400; 
 }
@@ -39,7 +44,7 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 
 
 
-
+ 
 
 
 
@@ -58,6 +63,7 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 .modal a.close { color: #515151; }
 .modal #modal-icon { font-size: 3em; }
 
+
 #ui-datepicker-div { z-index: 9999999 !important; }
 
 .gumby label.checkbox { background-color: transparent; }
@@ -65,6 +71,27 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 .gumby .btn a { padding: 0 10px; }
 .disabled { opacity: .25; }
 .gumby .folio-info { padding-left: 15px; }
+
+
+
+
+body.folio-author_page_dpsfa_page_folios,
+body.post-type-dpsfa_folio,
+body.folio-author_page_dpsfa_page_articles,
+body.post-type-dpsfa_article,
+body.folio-author_page_dpsfa_page_settings {
+	min-width: 1425px;
+}
+
+
+
+body.folio-author_page_dpsfa_page_folios #adminmenuback,
+body.post-type-dpsfa_folio #adminmenuback,
+body.folio-author_page_dpsfa_page_articles #adminmenuback,
+body.post-type-dpsfa_article #adminmenuback,
+body.folio-author_page_dpsfa_page_settings #adminmenuback {
+	z-index: -1;
+}
 
 
 
@@ -84,6 +111,7 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 #dpsfa_folio-status, #dpsfa_folio-status input, #dpsfa_folio-status label,
 #dpsfa_article-action, #dpsfa_article-action input, #dpsfa_article-action label, #dpsfa_article-action .btn,
 #dpsfa_article-meta, #dpsfa_article-meta input, #dpsfa_article-meta label,
+#dpsfa_article-status, #dpsfa_article-status input, #dpsfa_article-status label,
 #dpsfa_article-settings, #dpsfa_article-settings input, #dpsfa_article-settings label, #dpsfa_article-settings select,
 #rd_meta_box_template_options_add, #rd_meta_box_template_options_add input, #rd_meta_box_template_options_add label {
 	font-family: "Open Sans"; font-weight: 300;
@@ -100,8 +128,9 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 #dpsfa_folio-status h3,
 #dpsfa_article-action h3,
 #dpsfa_article-meta h3,
+#dpsfa_article-status h3,
 #dpsfa_article-settings h3 {
-	background: #fff;
+	background: transparent;
 	text-align: center;
 	font-family: "Open Sans";	
 }
@@ -112,11 +141,14 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 #dpsfa_folio-actions.postbox,
 #dpsfa_article-meta.postbox,
 #dpsfa_article-action.postbox, 
+#dpsfa_article-status.postbox,
 #dpsfa_article-settings.postbox,
 #dpsfa_folio-advanced-meta.postbox,
 #dpsfa_folio-rendition-general.postbox, 
-#dpsfa_folio-articles.postbox { background: none;
+#dpsfa_folio-articles.postbox { 
+	background: white;
 	border: 1px solid #ebebeb;
+	box-shadow: 0 0px 0px rgba(0,0,0,0);
 }
 
 #dpsfa_folio-articles h3 { border: none; display: none; }
@@ -131,12 +163,22 @@ body.post-type-dpsfa_article #icon-none { display: none; }
 body.post-type-dpsfa_article #icon-edit { display: none; }
 body.post-type-dpsfa_article h2 { display: none; }
 body.post-type-dpsfa_article .folio-metadata { margin-bottom: 5px; }
+body.post-type-dpsfa_article #poststuff { margin-top: 35px; }
 
 
 
 
+#dpsfa_article-status .rendition {
+	border-bottom: 1px solid #e5e5e4;
+	padding-bottom: 10px;
+	padding-top: 10px;
+	padding-left: 10px;
+}
 
-
+#dpsfa_article-status .rendition.active {
+	background-color: #f2f2f2;
+	font-weight: bold;
+}
 
 
 
@@ -235,6 +277,13 @@ ul.striped li:nth-of-type(even) { background-color: #e5e5e5; }
 .gumby .cover-thumbnail { display: inline-block; vertical-align: baseline; text-align: center; }
 .gumby .folio-details { color: #919191; }
 
+.folio-author_page_dpsfa_page_settings tr.ui-state-highlight,
+.folio-author_page_dpsfa_page_folios tr.ui-state-highlight,
+.folio-author_page_dpsfa_page_articles tr.ui-state-highlight,
+.post-type-dpsfa_folio tr.ui-state-highlight {
+	border: 2px dashed #d7d8d6 !important;
+	height: 57px;
+}
 
 
 
@@ -401,5 +450,42 @@ table#article-renditions tr .article-actions { visibility: hidden; }
 table#article-renditions tr:hover .article-actions { visibility: visible; }
 
 
- 
+.red { color: #ca3838; }
+.yellow { color: #f6b83f; }
+.green { color: #42a35a; }
+
+
+.postbox .rendition span.status { display: inline-block; width: 10%; }
+.postbox .rendition span.name { display: inline-block; width: 67%; }
+.postbox .rendition span.actions { display: inline-block; width: 20%; }
+
+
+
+
+.folio-author_page_dpsfa_page_settings tr.ui-state-highlight,
+.folio-author_page_dpsfa_page_folios tr.ui-state-highlight,
+.folio-author_page_dpsfa_page_articles tr.ui-state-highlight,
+.post-type-dpsfa_folio tr.ui-state-highlight {
+	border: 2px dashed #d7d8d6 !important;
+	height: 57px;
+}
+
+
+.gumby textarea, .gumby input[type=text], .gumby input[type=password], .gumby input[type=email], .gumby input[type=number], .gumby input[type=search], .gumby input[type=tel], .gumby input[type=url], .gumby .titlewrap input, .gumby select {
+    box-shadow: inset 0px 0px 0px rgba(0,0,0,0) !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -35,20 +35,25 @@ if( !class_exists( 'DPSFolioAuthor_Sidecar_Importer' ) ){
     		$this->articlePrefix = $this->articleService-> articlePrefix;
         }
         
-        public function import( $sidecarFile, $rendition ){
+        public function import( $sidecarFile, $folioID ){
             $found = 0;
             $entries = $this->get_entries_from_sidecar( $sidecarFile );
             foreach( $entries as $entry ){
-                $foundArticle = $this->articleService->get_article_by_name( $entry["name"], $rendition );
-                $article = $foundArticle[0];
+                $foundArticle = $this->articleService->get_article_by_name( $entry["name"], $folioID );
+                $article = isset($foundArticle[0]) ? $foundArticle[0] : false;
                 if($article){
+                    $articleID = $article["localID"];
+                    if($this->articleService->is_rendition($articleID)){
+                        $renditionAsPost = get_post($articleID);
+                        $articleID = $renditionAsPost->post_parent;
+                    }
                     $this->articleService->update_article_field( $article["localID"], "position", $entry["position"] );
                     
                     /* Unset fields we don't need */
                     unset( $entry["name"] );
                     unset( $entry["position"] );
                     
-                    $this->articleService->update_article_field( $article["localID"], "meta", $entry );
+                    $this->articleService->update_article_field( $articleID, "meta", $entry );
                     $found++;
                 }
             }
@@ -70,7 +75,7 @@ if( !class_exists( 'DPSFolioAuthor_Sidecar_Importer' ) ){
         	$entriesFromXML = $xmlDoc->getElementsByTagName('entry');
         	foreach($entriesFromXML as $entry) {
         	    $sidecarEntry = array();
-        	    $sidecarEntry["position"] = $counter;
+        	    $sidecarEntry["position"] = $counter * 100;
         	    if( isset($entry->getElementsByTagName('folderName')->item(0)->nodeValue) ){ $sidecarEntry["name"] = $entry->getElementsByTagName('folderName')->item(0)->nodeValue; }
         	    if( isset($entry->getElementsByTagName('articleTitle')->item(0)->nodeValue) ){ $sidecarEntry["title"] = $entry->getElementsByTagName('articleTitle')->item(0)->nodeValue; }
         	    if( isset($entry->getElementsByTagName('description')->item(0)->nodeValue) ){ $sidecarEntry["description"] = $entry->getElementsByTagName('description')->item(0)->nodeValue; }
@@ -85,7 +90,7 @@ if( !class_exists( 'DPSFolioAuthor_Sidecar_Importer' ) ){
         	    $entries[] = $sidecarEntry;
         	    $counter++;
         	}
-        	
+
             return $entries;
         }
         

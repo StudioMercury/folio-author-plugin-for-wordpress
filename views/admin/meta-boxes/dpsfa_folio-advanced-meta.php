@@ -9,7 +9,7 @@
 </style>
 
 <ul>
-    
+    <!--
     <li class="field">
         <h6 class="lead">Folio Orientation (intent)</h6>
         <div class="picker">
@@ -28,6 +28,8 @@
         x &nbsp;
         <input type="text" placeholder="height" class="narrow text input" name="<?php echo $fieldSlug;?>[resolutionHeight]" value="<?php echo isset($folio["meta"]["resolutionHeight"]) ? $folio["meta"]["resolutionHeight"] : "" ; ?>" />
     </li>
+    -->
+    
  
     <li class="viewer">
         <h6 class="lead">Viewer</h6>
@@ -62,11 +64,8 @@
         <input class="input" type="text" name="<?php echo $fieldSlug;?>[targetViewer]" value="<?php echo isset($folio["meta"]["targetViewer"]) ? $folio["meta"]["targetViewer"] : "" ; ?>" placeholder="xx.xx.xx" />  
     </li>
     
-    <br />
-    <div class="medium btn default" onclick="jQuery('.advanced').toggle();"><a>Show Advanced Article Info</a></div>
-    <br />
-    <BR/>
-<div class="advanced hidden">      
+    <hr />
+    
         
     <li class="field">  
         <h6 class="lead">Version</h6>
@@ -111,9 +110,7 @@
         <h6 class="lead">Modify Date</h6>    
         <input class="input" type="text" name="<?php echo $fieldSlug;?>[modifyDate]" value="<?php echo isset($folio["meta"]["modifyDate"]) ? $folio["meta"]["modifyDate"] : "" ; ?>" disabled />
     </li>
-    
-</div>    
-    
+        
     
 </ul>    
 </div>  

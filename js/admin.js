@@ -2,11 +2,18 @@
 	"use strict";
 	$(function () {
 
-
-
-
+        
 
         !function ($) {
+        
+        
+         if ( $('body.folio-author_page_dpsfa_page_folios').length != 0 ||
+              $('body.post-type-dpsfa_folio').length != 0 ||
+              $('body.folio-author_page_dpsfa_page_articles').length != 0 ||
+              $('body.folio-author_page_dpsfa_page_settings').length != 0 ) { 
+                  $('html').css({"background-color": "#fff"})
+         }
+        
         
           "use strict"; // jshint ;_
         

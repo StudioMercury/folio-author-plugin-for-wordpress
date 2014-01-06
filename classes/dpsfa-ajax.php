@@ -97,13 +97,16 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
             add_action( 'wp_ajax_edit_folio',                           array( $this, 'edit_folio' ) );
             
             // IMPORT HTMLRESOURCES
-            add_action( 'wp_ajax_nopriv_upload_htmlresources',            array( $this, 'upload_htmlresources' ) );
-            add_action( 'wp_ajax_upload_htmlresources',                   array( $this, 'upload_htmlresources' ) );
+            add_action( 'wp_ajax_nopriv_upload_htmlresources',          array( $this, 'upload_htmlresources' ) );
+            add_action( 'wp_ajax_upload_htmlresources',                 array( $this, 'upload_htmlresources' ) );
             
             // DUPLICATE ARTICLES FROM RENDITION
             add_action( 'wp_ajax_nopriv_duplicate_articles_from_rendition',     array( $this, 'duplicate_articles_from_rendition' ) );
             add_action( 'wp_ajax_duplicate_articles_from_rendition',            array( $this, 'duplicate_articles_from_rendition' ) );
             
+            // SYNC RENDITIONS
+            add_action( 'wp_ajax_nopriv_sync_renditions',               array( $this, 'sync_renditions' ) );
+            add_action( 'wp_ajax_sync_renditions',                      array( $this, 'sync_renditions' ) );            
         }
         
         // simple second defense against missing fields so nothing blows up
@@ -138,6 +141,23 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
                 );
                 $this->return_as_json($data);
             }
+        }
+        
+        public function sync_renditions(){
+            $this->setupErrorCollecting();
+            $syncService = DPSFolioAuthor_Sync::getInstance();
+            $return = $syncService->sync( $_POST["origin"], $_POST["toUpdate"], $_POST["fields"] );
+            if( is_wp_error($return) ){
+                $data = array(
+                    "code" => 0,
+                    "message" => $this->generate_errors($return)
+                );
+            }else{
+                $data = array(
+                    "code" => 1
+                );
+            }
+            $this->return_as_json($data);
         }
         
         public function upload_htmlresources(){
@@ -209,6 +229,9 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
                     break;
                 case "import_sidecar_xml":
                     include_once( dirname( __DIR__  ) . '/views/admin/ajax/import-sidecar-xml.php' );
+                    break;
+                case "rendition_sync":
+                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/rendition-sync.php' );
                     break;
             }
             die();

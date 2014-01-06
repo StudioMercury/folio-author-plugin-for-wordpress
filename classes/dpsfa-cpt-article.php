@@ -150,12 +150,14 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Article' ) )
 
             global $post;
             global $typenow;
+            global $article;
             if($typenow !== self::POST_TYPE_SLUG)
                 return;
                 
             $articleService = DPSFolioAuthor_Article::getInstance();
             $isRendition = $articleService->is_rendition($post->ID);
-            
+            $article = $articleService->article($post->ID);
+
             if(!$isRendition){
                 add_meta_box(
     				DPSFolioAuthor::PREFIX . 'article-meta',
@@ -166,6 +168,18 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Article' ) )
     				'high'
     			);
             }
+            
+            if( $isRendition || !empty($article["renditions"]) ){
+                add_meta_box(
+    				DPSFolioAuthor::PREFIX . 'article-status',
+    				'Renditions',
+    				__CLASS__ . '::markupMetaBoxes',
+    				self::POST_TYPE_SLUG,
+    				'side',
+    				'high'
+    			);
+            }
+            
             			
 			add_meta_box(
 				DPSFolioAuthor::PREFIX . 'article-action',
@@ -214,8 +228,7 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Article' ) )
 		 * @param array $box
 		 */
 		public static function markupMetaBoxes( $post, $box ){
-		    $articleService = DPSFolioAuthor_Article::getInstance();
-            $article = $articleService->article( $post->ID );
+            global $article;
 
             $fieldSlug = DPSFolioAuthor_CPT_Article::POST_TYPE_SLUG;
 			$view = dirname( __DIR__ ) . "/views/admin/meta-boxes/" . $box[ 'id' ] . ".php";
@@ -252,7 +265,7 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Article' ) )
 				return;
 
 			$articleService = DPSFolioAuthor_Article::getInstance();
-		    $articleService->update_article_from_post( $postID );
+		    $articleService->update_article_from_post( $postID, $post );
 		}
 
 		/**
@@ -338,6 +351,8 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Article' ) )
 		
 		public static function saveArticleTitle($data, $articlePost){
             if($data['post_type'] == self::POST_TYPE_SLUG) {
+                if( !isset($articlePost["post_ID"]) ){ return $data; }
+                
                 $articleID = $articlePost["post_ID"];
                 if ( $parent_id = wp_is_post_revision( $articleID ) ) 
                     $articleID = $parent_id;

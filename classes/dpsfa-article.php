@@ -57,13 +57,10 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             		        "renditions"    =>  $this->get_article_field( $localID, 'renditions' ),     // sub articles (renditions) / duplicates just different sizes
             		        "folio"         =>  $this->get_article_field( $localID, 'folio' ),          // article's attached folio
             		        "status"        =>  $this->get_article_field( $localID, 'status' ),         // status of article
-            		        "modifyDate"    =>  $articlePost->post_modified,                            // article modified date
                        );
             if( $this->is_rendition($localID) ){
         		$article["hostedID"] 	    =   $this->get_article_field( $localID, 'hostedID' );       // article ID on adobe hosting
                 $article["parent"]          =   $articlePost->post_parent;
-            }else{
-                $article["origin"]          =   $this->get_article_field( $localID, 'origin' );
             }
 		    return $article;
 		}
@@ -120,16 +117,18 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		*/
 		public function get_article_field( $localID, $field ){
     		switch($field){
-        		case 'preview'          : return $this->get_article_preview($localID);
+        		case 'preview'          : return $this->get_article_preview($localID);break;
         		case 'hostedID'         : return get_post_meta($localID, $this->articlePrefix . "id", true);break;
         		case 'name'             : return get_post_meta($localID, $this->articlePrefix . "name", true);break;
+        		case 'content'          : $articlePost = get_post($localID); return $articlePost->post_content;break;
                 case 'template'         : return get_post_meta($localID, $this->articlePrefix . "template", true);break;
                 case 'meta'             : return $this->get_article_meta($localID);break;
                 case 'position'         : return get_post_meta($localID, $this->articlePrefix . "sortNumber", true);break;
                 case 'renditions'       : return $this->get_article_renditions($localID);break;
                 case 'folio'            : return get_post_meta($localID, $this->articlePrefix . "folio", true);break;
                 case 'status'           : return $this->get_article_status($localID);break;
-                case 'modifyDate'       : return get_post_meta($localID, $this->articlePrefix . "modifyDate", true);break;
+                case 'hostedMod'        : return get_post_meta($localID, $this->articlePrefix . "hostedMod", true);break;
+                case 'localMod'         : return get_post_meta($localID, $this->articlePrefix . "localMod", true);break;
                 case 'origin'           : return get_post_meta($localID, $this->articlePrefix . "origin", true);break;
                 default: return  new WP_Error('broke', __("No fields found for $field"));
     		}
@@ -150,22 +149,32 @@ if(!class_exists('DPSFolioAuthor_Article')) {
                 case 'name'                 : $updated = update_post_meta($localID, $this->articlePrefix . "name", $value);break;
                 case 'template'             : $updated = $this->update_article_template($localID, $value);break;
                 case 'meta'                 : $updated = $this->update_article_meta($localID, $value);break;
+                case 'content'              : $updated = $this->update_article_content($localID, $value);break;
                 case 'position'             : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "sortNumber") : update_post_meta($localID, $this->articlePrefix . "sortNumber", $value);break;
                 case 'folio'                : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "folio") : update_post_meta($localID, $this->articlePrefix . "folio", $value);break;
                 case 'hostedID'             : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "id") : update_post_meta($localID, $this->articlePrefix . "id", $value);break;
-                case 'modifyDate'           : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "modifyDate") : update_post_meta($localID, $this->articlePrefix . "modifyDate", $value);break;
+                case 'hostedMod'            : $updated = (empty($value)) ? delete_post_meta($localID, $this->articlePrefix . "hostedMod") : update_post_meta($localID, $this->articlePrefix . "hostedMod", $value);break;
+                case 'localMod'             : $updated = update_post_meta($localID, $this->articlePrefix . "localMod", $value);break;
                 case 'origin'               : $updated = update_post_meta($localID, $this->articlePrefix . "origin", $value);break;
                 case 'origin-tags'          : $updated = update_post_meta($localID, $this->articlePrefix . "origin-tags", $value);break;
                 case 'origin-categories'    : $updated = update_post_meta($localID, $this->articlePrefix . "origin-categories", $value);break;
                 default: return  new WP_Error('broke', __("No fields found for $field"));
     		}
     		// update folio mod date for each section
-    		if( !empty($updated) ){ $this->update_field_modified_date($localID, $field); }
-		}		
+    		if( !empty($updated) ){ $this->update_field_timestamp($localID, $field); }
+		}
 		
-		public function update_field_modified_date( $localID, $field ){
-    		$articlePost = get_post($localID);
-            update_post_meta($localID, $field . "_mod", $articlePost->post_modified);
+		public function update_article_content( $localID, $value ){
+            $content = array(
+                'ID'           => $localID,
+                'post_content' => $value
+            );
+            return wp_update_post( $content );
+		}
+		
+		public function update_field_timestamp( $localID, $field ){
+            $syncService = DPSFolioAuthor_Sync::getInstance();
+		    $syncService->timestamp_field($localID, $field);
 		}
 		
 		public function update_article_template( $localID, $value ){
@@ -192,17 +201,11 @@ if(!class_exists('DPSFolioAuthor_Article')) {
     		    $image = wp_get_attachment_image_src( $preview, "article-toc" );
 		        return array( "url" => $image[0], "attachmentID" => $preview );
     		}else{
-    		    $settings = get_option( DPSFolioAuthor::PREFIX . 'settings' );
-    		    if( isset($settings["automaticPreview"]) && !empty($settings["automaticPreview"]) ){
-        		    $autoPreview = $this->get_auto_preview( $localID );
-    		    }
-    		    $preview = !empty($autoPreview) ? array( "url" => $autoPreview["url"], "attachmentID" => $autoPreview["attachmentID"] ) : array( "url" => DPSFA_URL ."/assets/folio/toc.png", "attachmentID" => null );
-    		    $this->update_article_field( $localID, 'preview', $preview["attachmentID"] );
-                return $preview;
+    		    return array( "url" => DPSFA_URL ."/assets/folio/toc.png", "attachmentID" => null );
     		}
 		}
 		
-		public function get_auto_preview( $localID ){
+		public function generate_auto_preview( $localID ){
     		// see if there's a featured image
     		$featuredImage = get_post_thumbnail_id($localID);
     		if( empty($featuredImage) ){ 
@@ -211,9 +214,36 @@ if(!class_exists('DPSFolioAuthor_Article')) {
     		    $html = str_get_html($articlePost->post_content);
                 $images = $html->find('img');
                 if( !empty($images) ){
-                    global $wpdb;
-                    $prefix = $wpdb->prefix;
-                    $attachment = $wpdb->get_col($wpdb->prepare("SELECT ID FROM " . $prefix . "posts" . " WHERE guid='%s';", $images[0]->src )); 
+                    
+                    $attachment = $this->get_attachement_from_url($images[0]->src);
+                    if(count($attachment) < 1){
+                        // no matches found - in some cases this is because it's referncing an image rendition, try searching 
+                        $imageSRC = $images[0]->src;
+                        $ext = pathinfo($imageSRC, PATHINFO_EXTENSION);
+                        $imageURL = preg_replace('/-(\d{1,})x(\d{1,}).'.$ext.'/', '', $imageSRC);
+                        $attachment = $this->get_attachement_from_url($imageURL);
+                        
+                        // last check, if it still can't find a local attachement, it might be on another server
+                        if( count($attachment) < 1 ){
+                        	$tmp = download_url( $imageSRC );
+                        	preg_match('/[^\?]+\.(jpg|JPG|jpe|JPE|jpeg|JPEG|gif|GIF|png|PNG)/', $imageSRC, $matches);
+                        	$file_array['name'] = basename($matches[0]);
+                        	$file_array['tmp_name'] = $tmp;
+                        	if ( !is_wp_error( $tmp ) ) {
+                        		$attachmentID = media_handle_sideload( $file_array, $localID );
+                                if(!is_wp_error($attachmentID)){
+                                    $image = wp_get_attachment_image_src( $attachmentID, 'article-toc' );
+                                    if( !empty($image) ){
+                                		return array(
+                                		    "url" => $image[0],
+                                		    "attachmentID" => $attachmentID
+                                        );
+                            		} 
+                                }
+                        	}
+                        }
+                    }
+                    
                     if( count($attachment) > 0){
                         $image = wp_get_attachment_image_src( $attachment[0], 'article-toc' );
                 		if( !empty($image) ){
@@ -233,17 +263,19 @@ if(!class_exists('DPSFolioAuthor_Article')) {
     		}
     		return false;
 		}
+		
+		public function get_attachement_from_url($url){
+		    global $wpdb;
+            $prefix = $wpdb->prefix;
+            return $wpdb->get_col($wpdb->prepare("SELECT ID FROM " . $prefix . "posts" . " WHERE guid='%s';", $url));
+		}
 
 		public function get_article_status( $localID ){
-		    return array(
-		        "meta" =>       get_post_meta($localID, "meta" . "_mod", true),
-		        "device" =>     get_post_meta($localID, "device" . "_mod", true),
-		        "published" =>  get_post_meta($localID, "hostedID" . "_mod", true),
-		        "preview" =>    get_post_meta($localID, "preview" . "_mod", true),
-		        "template" =>   get_post_meta($localID, "template" . "_mod", true),
-		        "position" =>   get_post_meta($localID, "position" . "_mod", true),
-		        "name" =>       get_post_meta($localID, "name" . "_mod", true),
-		    );
+		    // fields to check article status
+		    $fields = array("content","meta","preview","template","position","name");
+            // check fields for status
+            $syncService = DPSFolioAuthor_Sync::getInstance();
+            return $syncService->status($localID, $fields);
 		}
 
 		/*
@@ -401,31 +433,52 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		* Saves article information from adobe POST command
 		*
 		* @param	string  $localID the wordpress ID of the post for the article
+		* @param    object  WP_POST object of the original
 		* @param    $_POST array
 		*
 		*/
-		public function update_article_from_post( $localID ){		    
-		            
-            $articlePOST = $_POST[ $this->articlePostType ];
+		public function update_article_from_post( $localID, $post ){		    
+		    
+		    // check content
+		    if( !empty($post) ){
+    		   if(isset($_POST["content"]) && ($post->post_content != stripslashes($_POST["content"]) )){
+    		       $this->update_field_timestamp( $localID, "content" );
+    		   }
+		    }
+		    
+            $articlePOST = isset($_POST[$this->articlePostType]) ? $_POST[$this->articlePostType] : array();
             $this->update_article_field( $localID, 'meta', $articlePOST);
 
 			// If article has a preview thumbnail
-		    if( isset($_FILES[$this->articlePrefix . "preview"]) ){
-			    if($_FILES[$this->articlePrefix . "preview"]["tmp_name"] != ""){
-    			    $attachementID = media_handle_upload( $this->articlePrefix . "preview", $localID);
-                    $this->update_article_field( $localID, 'preview', $attachementID);
-			    }
-			}
-			if( empty($_POST[ $this->articlePrefix . "preview" ]) ){
-                delete_post_meta( $localID, $this->articlePrefix . "preview" );
+		    if( isset($_FILES[$this->articlePrefix . "preview"]) && !empty($_FILES[$this->articlePrefix . "preview"]["tmp_name"]) ){
+                $attachementID = media_handle_upload( $this->articlePrefix . "preview", $localID);
+                $this->update_article_field( $localID, 'preview', $attachementID);
+			}else{
+			    // check if the option for generating auto previews is set
+			    // if set, try to generate a preview from the featured image or first image in the post
+			    $settings = get_option( DPSFolioAuthor::PREFIX . 'settings' );
+    		    if( isset($settings["automaticPreview"]) && !empty($settings["automaticPreview"]) ){
+    		         // does the article already have a TOC preview, if so don't override it.
+    			    $savedPreview = $this->get_article_field( $localID, 'preview');
+    			    if(empty($savedPreview) || empty($savedPreview["url"]) || empty($savedPreview["attachmentID"])){
+        			    $autoPreview = $this->generate_auto_preview( $localID );
+            		    if(!empty($autoPreview)){  
+            		        $this->update_article_field( $localID, 'preview', $autoPreview["attachmentID"] );
+            		    }else{
+                            delete_post_meta( $localID, $this->articlePrefix . "preview" );
+            		    }
+    			    }
+    		    }else{
+                    delete_post_meta( $localID, $this->articlePrefix . "preview" );
+    		    }
 			}
 
 			// make sure to update defaults:
 			$template = !empty($_POST[$this->articlePostType]["template"]) ? $_POST[$this->articlePostType]["template"] : "";
             $this->update_article_field( $localID, 'template', $template);
             
-			// make sure post's title is up to date with article number
-			
+			// update post modification date
+            $this->update_article_field( $localID, 'localMod', date('Y-m-d H:i:s') );
         }
 
         /*
@@ -470,6 +523,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             $originalMeta = $this->get_article_field( $localID, 'meta' );
             $merged = array_merge( $originalMeta, $metaOverrides );
             $this->update_article_field( $rendition, 'meta', $merged );
+            $this->update_article_field( $rendition, 'localMod', $this->get_article_field( $localID, 'localMod' ) );
             return $rendition;
         }
 
@@ -610,6 +664,8 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             $articleID = wp_insert_post( $newArticle );
             if($linked){ $this->link_article($articleID); }
             else{ $this->unlink_article($articleID); }
+            
+            $this->update_article_field( $articleID, 'localMod', date('Y-m-d H:i:s') );
             return $articleID;
         }
 
@@ -943,6 +999,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             $return = $adobe->update_article_meta( $article["hostedID"], $folio["hostedID"], $meta);
             if( !is_wp_error($return) && !empty($update) ){
                 $this->update_article_field( $article["localID"], "meta", (array)$return->articleInfo );
+                $this->update_article_field( $article["localID"], 'hostedMod', date('Y/m/d H:i:s') );              
             }
             return $return;
         }
@@ -980,6 +1037,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
                 $hostedID = $return->articleInfo->id;
                 $this->update_article_field($localID, 'hostedID', $hostedID);
                 $this->update_article_field($localID, 'name', $return->articleInfo->name);
+                $this->update_article_field( $article["localID"], 'hostedMod', date('Y/m/d H:i:s') );              
                 return  $hostedID;
             }else{
                 return $return;

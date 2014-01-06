@@ -98,7 +98,7 @@
                 </div>
                 <br /><br />
                 <h6 class="lead">
-                We supply you with some sample templates to get started. To add your own templates simple copy the <b>dps-templates</b> folder from the plugin and put it into your theme folder. To learn more about making your own templates you can read about the template engine here <a href="#">Working with the Template Engine.</a>
+                We supply you with some sample templates to get started. To add your own templates simple copy the <b>dps-templates</b> folder from the plugin and put it into your theme folder. To learn more about making your own templates you can read about the template engine here <a target="_blank" href="http://studiomercury.github.io/folio-author-plugin-for-wordpress/">Working with the Template Engine.</a>
                 </h6>
             </li>
             

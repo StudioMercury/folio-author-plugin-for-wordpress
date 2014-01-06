@@ -149,6 +149,8 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Folio' ) )
                 
             global $post;
             global $typenow;
+            global $folio;
+            
             if($typenow !== self::POST_TYPE_SLUG)
                 return;
 
@@ -221,10 +223,11 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Folio' ) )
 		 */
 		public static function markupMetaBoxes( $post, $box )
 		{
-            $deviceList = self::getTargetDevices();
+            global $folio;
             
+            $deviceList = self::getTargetDevices();
+
             $folioService = DPSFolioAuthor_Folio::getInstance();
-            $folio = $folioService->folio($post->ID);
             $isRendition = $folioService->is_rendition($post->ID);
 
             $fieldSlug = DPSFolioAuthor_CPT_Folio::POST_TYPE_SLUG;
@@ -344,143 +347,8 @@ if( !class_exists( 'DPSFolioAuthor_CPT_Folio' ) )
 		}
 		
 		public static function getTargetDevices(){
-		    $devices	= array();
-		    
-		    $devices["apple"]["name"] = "Apple";
-		    $devices["google"]["name"] = "Google";
-		    $devices["amazon"]["name"] = "Amazon";
-		    $devices["barnesandnoble"]["name"] = "Barnes & Noble";
-	       
-	       $devices["apple"]["device"][] = array(
-	            "name"      => "Custom",
-	            "slug"      => "custom",
-	            "width"     => "",
-	            "height"    => "",
-	            "thumb"     => "/assets/devices/custom.png"
-	       );
-	       
-	       $devices["apple"]["device"][] = array(
-	            "name"      => "iPad HD",
-	            "slug"      => "iphone-hd",
-	            "width"     => "1536",
-	            "height"    => "2048",
-	            "thumb"     => "/assets/devices/ipad-hd.png"
-	       );
-	       
-	       $devices["apple"]["device"][] = array(
-	            "name"      => "iPad SD",
-	            "slug"      => "iphone-sd",
-	            "width"     => "768",
-	            "height"    => "1024",
-	            "thumb"     => "/assets/devices/ipad-sd.png"
-	       );	
-	       
-	       $devices["apple"]["device"][] = array(
-	            "name"      => "iPhone 5",
-	            "slug"      => "iphone-5",
-	            "width"     => "640",
-	            "height"    => "1136",
-	            "thumb"     => "/assets/devices/iphone-5.png"
-	       );	       
-	       
-	       $devices["apple"]["device"][] = array(
-	            "name"      => "iPhone 4/4S",
-	            "slug"      => "iphone-4",
-	            "width"     => "640",
-	            "height"    => "960",
-	            "thumb"     => "/assets/devices/iphone-hd.png"
-	       );
-	       
-	       $devices["amazon"]["device"][] = array(
-	            "name"      => "Kindle Fire",
-	            "slug"      => "kindle-fire",
-	            "width"     => "1024",
-	            "height"    => "600",
-	            "thumb"     => "/assets/devices/kindle-fire-sd.png"
-	       );
-	       
-	       $devices["amazon"]["device"][] = array(
-	            "name"      => "Kindle Fire HDX 8.9",
-	            "slug"      => "kindle-fire",
-	            "width"     => "2560",
-	            "height"    => "1600",
-	            "thumb"     => "/assets/devices/kindle-fire-hdx-8.png"
-	       );
-	       
-	       $devices["amazon"]["device"][] = array(
-	            "name"      => "Kindle Fire HDX 7 / HD 8.9",
-	            "slug"      => "kindle-fire",
-	            "width"     => "1920",
-	            "height"    => "1200",
-	            "thumb"     => "/assets/devices/kindle-fire-hdx-8.png"
-	       );
-	       
-	       $devices["amazon"]["device"][] = array(
-	            "name"      => "Kindle Fire 7 HD",
-	            "slug"      => "kindle-fire",
-	            "width"     => "1280",
-	            "height"    => "800",
-	            "thumb"     => "/assets/devices/kindle-fire-hdx-8.png"
-	       );
-	       
-	       $devices["barnesandnoble"]["device"][] = array(
-	            "name"      => "B&N Nook 7in SD",
-	            "slug"      => "bn-nook-7-sd",
-	            "width"     => "1024",
-	            "height"    => "600",
-	            "thumb"     => "/assets/devices/bn-7-sd.png"
-	       );
-	       
-	       $devices["barnesandnoble"]["device"][] = array(
-	            "name"      => "B&N Nook 7in HD",
-	            "slug"      => "bn-nook-7-hd",
-	            "width"     => "1440",
-	            "height"    => "900",
-	            "thumb"     => "/assets/devices/bn-7-hd.png"
-	       );
-	       
-	       $devices["barnesandnoble"]["device"][] = array(
-	            "name"      => "B&N Nook 9in HD",
-	            "slug"      => "bn-nook-9-hd",
-	            "width"     => "1920",
-	            "height"    => "1280",
-	            "thumb"     => "/assets/devices/bn-9-hd.png"
-	       );
-	       
-	       $devices["google"]["device"][] = array(
-	            "name"      => "Google Nexus 4",
-	            "slug"      => "google-nexus-4",
-	            "width"     => "1280",
-	            "height"    => "768",
-	            "thumb"     => "/assets/devices/google-nexus-4.png"
-	       );
-	       
-	       $devices["google"]["device"][] = array(
-	            "name"      => "Google Nexus 5",
-	            "slug"      => "google-nexus-5",
-	            "width"     => "1920",
-	            "height"    => "1080",
-	            "thumb"     => "/assets/devices/google-nexus-5.png"
-	       );
-           
-           $devices["google"]["device"][] = array(
-	            "name"      => "Google Nexus 7",
-	            "slug"      => "google-nexus-7",
-	            "width"     => "1280",
-	            "height"    => "800",
-	            "thumb"     => "/assets/devices/google-nexus-7.png"
-	       );
-	       
-	       $devices["google"]["device"][] = array(
-	            "name"      => "Google Nexus 10",
-	            "slug"      => "google-nexus-10",
-	            "width"     => "2560",
-	            "height"    => "1600",
-	            "thumb"     => "/assets/devices/google-nexus-10.png"
-	       );
-	       	       
-	       return $devices;
-
+            $deviceService = DPSFolioAuthor_Device::getInstance();
+            return $deviceService->get_devices();
 		}
 		
 		/**

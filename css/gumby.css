@@ -1,5 +1,7 @@
 /* @override http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/gumby.css */
 
+/* @override http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/gumby.css */
+
 @charset "UTF-8";
 @import url(//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
 /**
@@ -1238,11 +1240,11 @@ i.icon-logo-db:before { content: "\f603"; height: inherit; }
 
 .gumby ol { list-style: decimal; margin-left: 30px; }
 
-ul.square, ul.circle, ul.disc { margin-left: 25px; }
-ul.square { list-style: square outside; }
-ul.circle { list-style: circle outside; }
-ul.disc { list-style: disc outside; }
-ul ul { margin: 4px 0 5px 25px; }
+.gumby ul.square, ul.circle, ul.disc { margin-left: 25px; }
+.gumby ul.square { list-style: square outside; }
+.gumby ul.circle { list-style: circle outside; }
+.gumby ul.disc { list-style: disc outside; }
+.gumby ul ul { margin: 4px 0 5px 25px; }
 
 .gumby ol ol { margin: 4px 0 5px 30px; }
 

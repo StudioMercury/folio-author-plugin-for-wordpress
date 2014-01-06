@@ -95,7 +95,12 @@ if(!class_exists('DPSFolioAuthor_Admin')) {
 
 		public static function registerPluginPage(){
             global $menu;
-            $main_page = add_menu_page( 'Folio Author for WordPress', 'Folio Author', self::REQUIRED_CAPABILITY, 'dpsfa_page_main' ,array(__CLASS__, 'dpsfa_settings_page'), DPSFA_URL . '/assets/admin/dps-icon.png', '53.5' );
+            global $wp_version;
+            if($wp_version >= 3.8) {
+                $main_page = add_menu_page( 'Folio Author for WordPress', 'Folio Author', self::REQUIRED_CAPABILITY, 'dpsfa_page_main' ,array(__CLASS__, 'dpsfa_settings_page'), 'dashicons-image-rotate-right', '53.5' );
+            } else {
+                $main_page = add_menu_page( 'Folio Author for WordPress', 'Folio Author', self::REQUIRED_CAPABILITY, 'dpsfa_page_main' ,array(__CLASS__, 'dpsfa_settings_page'), '', '53.5' );
+            }
             $settings_page = add_submenu_page( 'dpsfa_page_main', "Issues",  "Issues" , self::REQUIRED_CAPABILITY, 'dpsfa_page_folios', __CLASS__ . '::dpsfa_folios_page' );
             $settings_page = add_submenu_page( 'dpsfa_page_main', "Articles",  "Articles" , self::REQUIRED_CAPABILITY, 'dpsfa_page_articles', __CLASS__ . '::dpsfa_articles_page' );
             $settings_page = add_submenu_page( 'dpsfa_page_main', "DPS Settings",  "Settings" , self::REQUIRED_CAPABILITY, 'dpsfa_page_settings', __CLASS__ . '::dpsfa_settings_page' );
