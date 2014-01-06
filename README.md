@@ -7,7 +7,7 @@ following link which includes the [Folio Producer API](https://github.com/Coffee
 library needed to communicate with the DPS API servers.
 
 
-[Latest Download (v1.0.0)](http://studiomercury.github.io/folio-author-plugin-for-wordpress/downloads/v1.0.0.zip)
+[Latest Download](http://studiomercury.github.io/folio-author-plugin-for-wordpress/)
 
 
 ## Requirements
