@@ -34,3 +34,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#feb8e7', end
 .btn.flat:hover {
 	background-color: transparent;
 }
+
+header a {
+	color: #fff;
+}
+
+header a:hover {
+	color: #fff;
+}
