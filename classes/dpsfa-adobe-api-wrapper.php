@@ -25,7 +25,7 @@ if( !class_exists( 'DPSFolioAuthor_Adobe' ) )
 		    $settingsObj = DPSFolioAuthor_Settings::getInstance();
 		    $settings = $settingsObj->get_settings();
     		return array(
-                'api_server' => 'https://dpsapi2.acrobat.com',
+                'api_server' => 'https://dpsapi2.digitalpublishing.acrobat.com',
                 'company' => $settings["company"],
                 'consumer_key' => $settings["key"],
                 'consumer_secret' => $settings["secret"],
