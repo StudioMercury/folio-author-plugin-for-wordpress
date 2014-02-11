@@ -17,7 +17,7 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
 
         protected $modules;
 
-        const VERSION		= '1.1.0';
+        const VERSION		= '1.2.0';
         const PREFIX		= 'dpsfa_';
         const DEBUG_MODE	= false;
         const PLUGIN_UPLOAD_DIR = 'dpsfa';
