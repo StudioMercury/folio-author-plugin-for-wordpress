@@ -1,0 +1,76 @@
+{{#search}}
+<h4>Found results for: <b>{{search}}</b></h4>
+{{/search}}
+
+{{^search}}
+    {{#noResults}}
+        <h4><b>No articles associated with this issue</b></h4>
+    {{/noResults}}
+    {{^noResults}}
+        <h4>Articles associated with this issue</h4>
+    {{/noResults}}
+{{/search}}
+
+<ul class="text-left checkbox-list">
+
+    {{#articles}}
+    <li class="field">
+        <label class="checkbox one columns" for="{{localID}}">
+            <input id="{{localID}}" type="checkbox" value="{{localID}}" name="articles[]"/>
+            <span></span> 
+        </label>
+        <img class="one columns" src="{{preview.url}}" width="25" height="25" />
+        <div class="four columns">{{meta.name}}</div>
+        <div class="five columns">{{meta.title}}</div>
+    </li>
+    {{/articles}}
+    
+    {{#folios}}
+    <li class="field">
+        <label class="checkbox one columns" for="{{localID}}">
+            <input id="{{localID}}" type="checkbox" value="{{localID}}" name="articles[]"/>
+            <span></span> 
+        </label>
+        <img class="one columns" src="{{preview.url}}" width="25" height="25" />
+        <div class="four columns">{{meta.name}}</div>
+        <div class="five columns">{{meta.title}}</div>
+    </li>
+    {{/folios}}
+    
+    {{#custom}}
+    <li class="field">
+        <label class="checkbox one columns" for="{{localID}}">
+            <input id="{{localID}}" type="checkbox" value="{{localID}}" name="articles[]"/>
+            <span></span> 
+        </label>
+        <img class="one columns" src="{{preview.url}}" width="25" height="25" />
+        <div class="four columns">{{meta.name}}</div>
+        <div class="five columns">{{meta.title}}</div>
+    </li>
+    {{/custom}}
+    
+    {{#search}}
+        {{#noResults}}
+            <li>No Items Found.</li>
+        {{/noResults}}
+    {{/search}}
+    
+    {{^search}}
+        {{#noResults}}
+            <li>
+                No articles have been associated with this issue. 
+                You can import articles by <a href="http://studiomercury.github.io/folio-author-plugin-for-wordpress/#import-articles">batch importing</a> them or associating them manually in the article list. 
+                You can also use the filter button above <i class="fa fa-filter"></i> to search for articles to add.
+            </li>
+        {{/noResults}}
+    {{/search}}
+    
+</ul>
+
+{{^noResults}}
+    <BR/><BR/>
+    <div class="text-left">
+        <div class="medium default btn"><a data-action="select_all" data-boxes=".posts-list">Check All</a></div>
+        <div class="medium primary btn"><a class="" data-action="add_articles_to_folio">Add Articles To Folio</a></div>
+    </div>
+{{/noResults}}

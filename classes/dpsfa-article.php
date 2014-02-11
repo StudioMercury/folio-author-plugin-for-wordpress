@@ -57,11 +57,9 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             		        "renditions"    =>  $this->get_article_field( $localID, 'renditions' ),     // sub articles (renditions) / duplicates just different sizes
             		        "folio"         =>  $this->get_article_field( $localID, 'folio' ),          // article's attached folio
             		        "status"        =>  $this->get_article_field( $localID, 'status' ),         // status of article
+                            "hostedID"      =>  $this->get_article_field( $localID, 'hostedID' ),      // article ID on adobe hosting
+                            "parent"        =>  $articlePost->post_parent
                        );
-            if( $this->is_rendition($localID) ){
-        		$article["hostedID"] 	    =   $this->get_article_field( $localID, 'hostedID' );       // article ID on adobe hosting
-                $article["parent"]          =   $articlePost->post_parent;
-            }
 		    return $article;
 		}
 
@@ -199,7 +197,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             $preview = get_post_meta($localID, $this->articlePrefix . "preview", true);
     		if( !empty($preview) ){
     		    $image = wp_get_attachment_image_src( $preview, "article-toc" );
-		        return array( "url" => $image[0], "attachmentID" => $preview );
+		        return array( "url" => (!empty($image[0])) ? $image[0] : DPSFA_URL ."/assets/folio/toc.png" , "attachmentID" => (!empty($preview)) ? $preview : null );
     		}else{
     		    return array( "url" => DPSFA_URL ."/assets/folio/toc.png", "attachmentID" => null );
     		}
@@ -490,7 +488,10 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		*
 		*/
 		public function duplicate_articles_from_rendition( $folio, $articles ){
-		    $currentArticles = $this->get_articles( null, $folio );
+		    $currentArticles = $this->get_articles( array(
+		        'filter' => null, 
+		        'folioID' => $folio
+            ));
 		    foreach($articles as $article){
 		        $add = true;
 		        foreach($currentArticles as $currentArticle){
@@ -739,21 +740,79 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		* @param    string   $folioID is a local ID or `unattached` or for a folio or null returns all articles
 		*
 		*/
-        public function get_articles( $filter = null, $folioID = null ){
-	        $args = array(
-            	'posts_per_page'   => -1,
-            	'orderby'          => 'post_date',
-                'order'            => 'ASC',
+        public function get_articles( $args = array() ){
+            $defaults = array (
+         		'filter'       => null, // either `local` or `hosted` or null returns all folios
+         		'limit'        => -1, // max number of folios to retrieve
+         		'offset'       => 0, // ability to offset the found posts
+         		'orderby'      => 'post_date', // how to order the found folios,
+         		'order'        => 'ASC',
+         		'parent'       => null, // post parent
+         		'folioID'      => null, // folio ID
+         		'search'       => null,
+         		'dateStart'    => null,
+         		'dateEnd'      => null,
+         		'customMeta'   => null,
+         		'customValue'  => null,
+         		'paged'        => null,
+         		'returnQuery'  => false,
+            );
+            $args = wp_parse_args( $args, $defaults );
+            extract( $args, EXTR_SKIP );
+
+	        $queryArgs = array(
+	            'post_parent'      => $parent,
+            	'posts_per_page'   => $limit,
+            	'orderby'          => $orderby,
+                'order'            => $order,
+                'offset'           => $offset,
             	'post_type'        => $this->articlePostType,
                 'meta_query'       => array(),
+                's'                => $search,
+                'paged'            => $paged
             );
 
-			$args['meta_query']['relation'] = 'AND';
+			$queryArgs['meta_query']['relation'] = 'AND';
 			// filter articles by local or hosted
 	        if( isset($filter) ){
-	            array_push( $args['meta_query'], array(
+	            array_push( $queryArgs['meta_query'], array(
             			'key' => $this->articlePrefix . 'owner',
             			'value' => $filter,
+            		)
+                );
+	        }
+	        
+	        /* Custom Values */
+	        if( !empty($customMeta) && !empty($customValue) ){
+    	        array_push( $queryArgs['meta_query'], array(
+            			'key' => $customMeta,
+            			'value' => $customValue,
+            		)
+                );
+	        }
+	        
+	        /* DATE RANGE */
+	        if( !empty($dateStart) ){
+    	        array_push( $queryArgs['date_query'], array(
+                        'after' => $dateStart,
+            			'inclusive' => true,
+            		)
+                );
+	        }
+	        
+	        if( !empty($dateEnd) ){
+    	        array_push( $queryArgs['date_query'], array(
+            			'before' => $dateEnd,
+            			'inclusive' => true,
+            		)
+                );
+	        }
+	        
+	        if( !empty($dateEnd) && !empty($dateStart) ){
+    	        array_push( $queryArgs['date_query'], array(
+                        'after' => $dateStart,
+            			'before' => $dateEnd,
+            			'inclusive' => true,
             		)
                 );
 	        }
@@ -761,26 +820,51 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 	        // filter articles by local or hosted
 	        if( isset($folioID) ){
 	            if( $folioID == "unattached" ){
-	                array_push( $args['meta_query'], array(
+	                array_push( $queryArgs['meta_query'], array(
                             'compare' => 'NOT EXISTS',
                 			'key' => $this->articlePrefix . 'folio',
                 			'value' => $folioID,
                 		)
                     );
 	            }else{
-    	            array_push( $args['meta_query'], array(
+    	            array_push( $queryArgs['meta_query'], array(
                 			'key' => $this->articlePrefix . 'folio',
                 			'value' => $folioID
                 		)
                     );
-                    $args['orderby'] = 'meta_value_num';
-                    $args['meta_key'] = $this->articlePrefix . 'sortNumber';
+                    $queryArgs['orderby'] = 'meta_value_num';
+                    $queryArgs['meta_key'] = $this->articlePrefix . 'sortNumber';
 	            }
 	        }
-            if( isset($filter) && isset($folioID) ){ $args['meta_query']['relation'] = 'AND'; }
-	        $query = new WP_Query( $args );
+            if( isset($filter) && isset($folioID) ){ $queryArgs['meta_query']['relation'] = 'AND'; }
+	        $query = new WP_Query( $queryArgs );
             $query->get_posts();
-            return $this->get_articles_from_query( $query );
+                        
+            if( $returnQuery ){
+                return $query;
+            }else{
+                return $this->get_articles_from_query( $query );
+            }
+        }
+        
+        public function get_articles_pagination( $args = array() ){
+            $defaults = array (
+         		'paged'            => null,
+         		'addArgs'          => array(),
+         		'originalQuery'    => null
+            );
+            $args = wp_parse_args( $args, $defaults );
+            extract( $args, EXTR_SKIP );
+            return paginate_links( array(
+                	'base' => str_replace( 999999999999, '%#%', esc_url( get_pagenum_link( 999999999999 ) ) ),
+                	'format' => '?paged=%#%',
+                	'current' => max( 1, $paged ),
+                	'total' => $originalQuery->max_num_pages,
+                	'type' => 'list',
+                	'add_args' => $addArgs,
+                	'prev_text' => '<i class="fa fa-chevron-left"></i>',
+                	'next_text' => '<i class="fa fa-chevron-right"></i>',
+            ) );
         }
 
         public function get_article_count( $folioID ){
@@ -824,6 +908,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
                 'order'            => 'ASC',
             	'post_type'        => $this->articlePostType,
                 'meta_query'       => array(),
+                'post_parent'      => 0
             );
 
 			$args['meta_query']['relation'] = 'AND';
@@ -884,23 +969,27 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		*/
         public function get_articles_from_query( $query ){
     		$articles = array();
-    		$renditions = array();
+    		//$renditions = array();
     		if( $query->have_posts() ){
     		    while ( $query->have_posts() ) {
                     $query->the_post();
                     $article = $this->article( get_the_ID() );
+                    /*
                     if( count($article["renditions"]) > 0 ){
                         foreach( $article["renditions"] as $rendition ){
                             array_push($renditions, $rendition["localID"]);
                         }
                     }
+                    */
                     array_push($articles, $article);
             	}
             }
             // unset all renditions (since they're in the renditions field for the article array)
+            /*
             foreach($articles as $index => $article){
                 if( in_array($article["localID"], $renditions) ){ unset($articles[$index]); }
             }
+            */
             return $articles;
 		}
 
@@ -931,10 +1020,18 @@ if(!class_exists('DPSFolioAuthor_Article')) {
             return true;
         }
 
-		public function import_article_from_post( $postID ){
+		public function import_article_from_post( $args = array() ){
+		    $defaults = array (
+         		'postID'       => null,
+         		'folioID'      => null
+            );
+            $args = wp_parse_args( $args, $defaults );
+            extract( $args, EXTR_SKIP );
+            
 		    $postTitle = get_the_title($postID);
     		$newArticle = $this->duplicate_article( $postID );
             $this->update_article_field( $newArticle, 'meta', array( "title" => $postTitle ) );
+            $this->update_article_field( $newArticle, 'folio', ($folioID == "none") ? null : $folioID );
     		return $newArticle;
 		}
 
