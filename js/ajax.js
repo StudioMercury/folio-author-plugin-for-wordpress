@@ -645,12 +645,17 @@ underscore.extend(DPSFolioAjax.prototype, {
 	bulk_action: function( data ){
 	    dataObj = jQuery(data.form).serialize();
 	    dataObj = (dataObj) ? dataObj + "&action=bulk_action" : "action=bulk_action";
+        
+        this.openDialog();
+	    this.disableClose();
+	    this.updateDialogHead( "Bulk Action" );
+	    this.updateDialog( "We're currently performing the bulk action. Please wait.", "refresh fa-spin" );
 	    
 	    onSuccess = jQuery.proxy(function(response){
             location.reload();
-            console.log(response);
 	    },this);
 	    onError = jQuery.proxy(function(response){
+	        this.enableClose();
             message = 'Couldn not do the bulk action';
 	        this.handle_errors( response, message );
 	    },this);
@@ -824,26 +829,28 @@ jQuery( document ).ready( function(){
     });
 
     /* SORTABLE */
-    jQuery( ".sortable.articles" ).sortable({
-      placeholder: "ui-state-highlight",
-      forcePlaceholderSize: true,
-      update: function(event, ui) {
-           articles = jQuery(this).sortable('toArray');
-           jQuery("#articleList").val(articles.join(","));
-      }
-    });
-    jQuery( ".sortable.articles" ).disableSelection();
-    
-    /* SORTABLE FOR DEVICES*/
-    jQuery( ".sortable.devices" ).sortable({
-      placeholder: "ui-state-highlight",
-      forcePlaceholderSize: true,
-      update: function(event, ui) {
-           console.log(jQuery(this).sortable('toArray'));
-      }
-    });
-    jQuery( ".sortable.devices" ).disableSelection();
+    if( jQuery(".sortable").length > 0 ){
+        jQuery( ".sortable.articles" ).sortable({
+          placeholder: "ui-state-highlight",
+          forcePlaceholderSize: true,
+          update: function(event, ui) {
+               articles = jQuery(this).sortable('toArray');
+               jQuery("#articleList").val(articles.join(","));
+          }
+        });
+        jQuery( ".sortable.articles" ).disableSelection();
         
+        /* SORTABLE FOR DEVICES*/
+        jQuery( ".sortable.devices" ).sortable({
+          placeholder: "ui-state-highlight",
+          forcePlaceholderSize: true,
+          update: function(event, ui) {
+               console.log(jQuery(this).sortable('toArray'));
+          }
+        });
+        jQuery( ".sortable.devices" ).disableSelection();
+
+    }
     /* INITIALIZE GUMBY MODULES */
     //Gumby.init({ uiModules: ['checkbox'] });
 

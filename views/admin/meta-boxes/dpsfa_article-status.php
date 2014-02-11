@@ -28,15 +28,12 @@
 
         <?php foreach($renditionParent["renditions"] as $rendition): ?>            
             <?php
-            $folioService = DPSFolioAuthor_Folio::getInstance();
-            $folio = $folioService->folio( $rendition["folio"] );
+                $folioService = DPSFolioAuthor_Folio::getInstance();
+                $folio = $folioService->folio( $rendition["folio"] );
             ?>
             
-            <?php if( !is_wp_error($folio) ): ?>
-            <?php //if($rendition["localID"] == $articleID){ echo "selected"; }?>
             <div class="rendition <?php if($post_id == $rendition["localID"]){ echo "active"; } ?>">
                 <span class="status">
-                    <?php //print_r($article["status"]["parent"]);?>
                     <?php
                     if( empty($rendition["status"]["parent"]) ){
                         $icon = "fa-times-circle red";
@@ -47,14 +44,16 @@
                     <i class="fa <?php echo $icon; ?>"></i>
                 </span>
                 <span class="name">
-                    <?php echo $folio["device"]["name"];?>
-                    <!-- <div class="issue"><small><?php echo $folio["meta"]["folioName"]; ?></small></div> -->
+                    <?php if( !is_wp_error($folio) ): ?>
+                        <?php echo $folio["device"]["name"];?>
+                    <?php else: ?>
+                        Folio doesn't exist
+                    <?php endif; ?>
                 </span>
                 <span class="actions">
                     <div class="small normal btn"><a href="<?php echo get_edit_post_link($rendition['localID']); ?>"> <i class="fa fa-pencil"></i></a></div>
                 </span>
             </div>
-            <?php endif; ?>
         <?php endforeach; ?>
     </div>
     

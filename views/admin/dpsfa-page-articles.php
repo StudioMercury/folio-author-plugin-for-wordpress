@@ -1,5 +1,4 @@
 <?php    
-    
     $paged = (isset( $_GET['paged'] )) ? $_GET['paged'] : 1;
     
     $associatedFolio = isset($_GET['folio']) ? $_GET['folio'] : null;
@@ -196,7 +195,6 @@
 
         <tbody class="sortable article-view">
         <?php foreach ($articles as $article ): ?>
-
             <tr onclick="">
     			<td width="5%" class="text-center">
     			    <div class="field">
@@ -234,7 +232,11 @@
         			    if($article["folio"]){
             			    $folioObj = DPSFolioAuthor_Folio::getInstance();
             			    $folio = $folioObj->folio($article["folio"]);
-                            echo $folio["meta"]["folioName"];
+            			    if( !is_wp_error($folio) ){
+                                echo $folio["meta"]["folioName"];
+            			    }else{
+                			    echo "Folio Deleted";
+            			    }
         			    }
                     ?>
     			</td>    	

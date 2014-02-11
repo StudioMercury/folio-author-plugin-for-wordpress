@@ -139,7 +139,10 @@ if( !class_exists( 'IDAdminNotices' ) )
 				
 			if( !isset( $this->notices[ $type .'s' ] ) )
 				return false;
-				
+            
+            $errors = $this->userNoticeCount;
+            if( $errors[ $type .'s'] >= 1 ){ return false; }
+            
 			array_push( $this->notices[ $type .'s' ], array(
 				'message'	=> $message,
 				'type'		=> $type,

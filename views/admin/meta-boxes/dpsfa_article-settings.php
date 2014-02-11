@@ -144,13 +144,27 @@
 <hr />
 
 <h6 class="lead">Associated Folio</h6>
-<?php if(!empty($article["folio"])): ?>
-    <div class="medium btn default"> 
-        <a href="<?php echo get_edit_post_link($article["folio"]); ?>" class="">Go To Associated Folio</a>
-    </div>
+
+<?php if(!empty($article["folio"]) ): ?>
+    <?php
+        $folioService = DPSFolioAuthor_Folio::getInstance();
+        $folio = $folioService->folio( $article["folio"] );
+    ?>
+    <?php if( !is_wp_error($folio) ): ?>
+        <div class="medium btn default"> 
+            <a href="<?php echo get_edit_post_link($article["folio"]); ?>" class="">Go To Associated Folio</a>
+        </div>
+    <?php else: ?>
+        <?php if( empty($article["folio"]) ):?>
+            This rendition isn't associated with a folio
+        <?php else: ?>
+            The folio ID: <?php echo $article["folio"]; ?> doesn't exist.
+        <?php endif;?>
+    <?php endif; ?>
 <?php else: ?>
-    No Associated Folio
+No Associated Folio
 <?php endif; ?>
+
 <BR/><BR/>
 
 <div class="text-center">
