@@ -40,6 +40,12 @@ if(!class_exists('DPSFolioAuthor_Admin')) {
 			add_action( 'admin_menu',					__CLASS__ . '::registerPluginPage' );
             add_action( 'admin_print_styles',           __CLASS__ . '::addFontAwesome' );
             add_action( 'admin_init',                   __CLASS__ . '::addAdminScripts' );
+            
+            /* Add option for bulk import */
+            add_action('admin_footer-edit.php',         __CLASS__ . '::add_bulk_import_to_admin_footer' );
+            add_action('load-edit.php',                 __CLASS__ . '::bulk_import_action' );
+            add_action('admin_notices',                 __CLASS__ . '::bulk_import_admin_notices' );
+            
 			/*
 			add_action( 'show_user_profile',			__CLASS__ . '::addUserFields' );
 			add_action( 'edit_user_profile',			__CLASS__ . '::addUserFields' );
@@ -54,6 +60,117 @@ if(!class_exists('DPSFolioAuthor_Admin')) {
 				__CLASS__ . '::addPluginActionLinks'
 			);
 			*/
+		}
+		
+		/* Add bulk action to select menu */
+		public static function add_bulk_import_to_admin_footer() {
+			global $post_type;
+			?>
+				<script type="text/javascript">
+					jQuery(document).ready(function() {
+						jQuery('<option>').val('dpsfa-import').text('<?php _e('Import as DPS Article')?>').appendTo("select[name='action']");
+						jQuery('<option>').val('dpsfa-import').text('<?php _e('Import as DPS Article')?>').appendTo("select[name='action2']");
+						
+						jQuery("select[name='action']").after('<select name="folios" id="folios"><option selected disabled>Select a Folio</option><option value="none">Do not associate</option></select>');
+						
+						<?php
+						    $folioObj = DPSFolioAuthor_Folio::getInstance();
+                            $folios = $folioObj->get_folios( array(
+                                'limit' => -1,
+                                'parentOnly' => true
+                            ));
+						?>
+						
+						<?php foreach( $folios as $folio ): ?>
+						    jQuery("#folios").append("<option value='<?php echo $folio["localID"]; ?>'><?php echo $folio["meta"]["folioName"]; ?></option>");
+						<?php endforeach; ?>
+						
+						jQuery("#folios").hide();
+						
+                        jQuery("select[name='action']").change(function(){
+                            if( jQuery(this).val() == "dpsfa-import" ){
+                                jQuery("#folios").show();
+                            }else{
+                                jQuery("#folios").hide();
+                            }
+                        });
+					});
+				</script>
+			<?php
+		}
+		
+		public static function bulk_import_admin_notices() {
+			global $post_type, $pagenow;
+			if($pagenow == 'edit.php' && isset($_REQUEST['article_imported']) && (int) $_REQUEST['article_imported']) {
+				if( empty($_REQUEST["folios"]) ){
+    				echo "<div class=\"error\"><p>No folio was selected to associate the imported articles</p></div>";
+    			}else{
+        			$message = sprintf( _n( 'Post imported as DPS article.', '%s posts imported as DPS articles.', $_REQUEST['article_imported'] ), number_format_i18n( $_REQUEST['article_imported'] ) );
+                    echo "<div class=\"updated\"><p>{$message}</p></div>";
+    			}
+			}
+		}
+		
+		public static function bulk_import_action() {
+			global $typenow;
+			$post_type = $typenow;
+						
+			// get the action
+			$wp_list_table = _get_list_table('WP_Posts_List_Table');  // depending on your resource type this could be WP_Users_List_Table, WP_Comments_List_Table, etc
+			$action = $wp_list_table->current_action();
+			
+			$allowed_actions = array("dpsfa-import");
+			if(!in_array($action, $allowed_actions)) return;
+			
+			// security check
+			check_admin_referer('bulk-posts');
+			
+			// make sure ids are submitted.  depending on the resource type, this may be 'media' or 'ids'
+			if(isset($_REQUEST['post'])) {
+				$post_ids = array_map('intval', $_REQUEST['post']);
+			}
+			
+			if(empty($post_ids)) return;
+			
+			// this is based on wp-admin/edit.php
+			$sendback = remove_query_arg( array('article_imported', 'untrashed', 'deleted', 'ids'), wp_get_referer() );
+			if ( ! $sendback )
+				$sendback = admin_url( "edit.php?post_type=$post_type" );
+			
+			$pagenum = $wp_list_table->get_pagenum();
+			$sendback = add_query_arg( 'paged', $pagenum, $sendback );
+			
+			switch($action) {
+				case 'dpsfa-import':
+					
+					// if we set up user permissions/capabilities, the code might look like:
+					//if ( !current_user_can($post_type_object->cap->export_post, $post_id) )
+					//	wp_die( __('You are not allowed to export this post.') );
+					$imported = 0;
+					foreach( $post_ids as $post_id ) {
+					    if( !empty($_REQUEST["folios"]) ){
+					        $articleService = DPSFolioAuthor_Admin::getInstance();
+    						if ( !$articleService->import_article($post_id, $_REQUEST["folios"]) )
+    							wp_die( __('Error importing post.') );
+                        }
+						$imported++;
+					}
+					
+					$sendback = add_query_arg( array('article_imported' => $imported, 'ids' => join(',', $post_ids), 'folios'=>isset($_REQUEST["folios"])?$_REQUEST["folios"]:null ), $sendback );
+				break;
+				
+				default: return;
+			}
+			
+			$sendback = remove_query_arg( array('action', 'action2', 'tags_input', 'post_author', 'comment_status', 'ping_status', '_status',  'post', 'bulk_edit', 'post_view'), $sendback );
+			
+			wp_redirect($sendback);
+			exit();
+		}
+		
+		public function import_article($post_id, $folioID){
+    		$articleService = DPSFolioAuthor_Article::getInstance();
+    		return $articleService->import_article_from_post(array( 'postID' => $post_id, 'folioID' => $folioID ));
 		}
 
 		public static function addAdminScripts(){

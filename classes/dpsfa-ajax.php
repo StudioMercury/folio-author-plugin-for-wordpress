@@ -21,93 +21,82 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
 		public function registerHookCallbacks(){
             
             // LINK FOLIO
-            add_action( 'wp_ajax_nopriv_link_folio',                    array( $this, 'link_folio' ) );
-            add_action( 'wp_ajax_link_folio',                           array( $this, 'link_folio' ) );
+            add_action( 'wp_ajax_link_folio',                                   array( $this, 'link_folio' ) );
                         
             // SYNC HOSTED FOLIOS
-            add_action( 'wp_ajax_nopriv_sync_hosted_folios',            array( $this, 'sync_hosted_folios' ) );
-            add_action( 'wp_ajax_sync_hosted_folios',                   array( $this, 'sync_hosted_folios' ) );
+            add_action( 'wp_ajax_sync_hosted_folios',                           array( $this, 'sync_hosted_folios' ) );
             
             // SYNC HOSTED ARTICLES
-            add_action( 'wp_ajax_nopriv_sync_hosted_articles',          array( $this, 'sync_hosted_articles' ) );
-            add_action( 'wp_ajax_sync_hosted_articles',                 array( $this, 'sync_hosted_articles' ) );
+            add_action( 'wp_ajax_sync_hosted_articles',                         array( $this, 'sync_hosted_articles' ) );
             
             // DELETE ARTICLE
-            add_action( 'wp_ajax_nopriv_delete_article',                array( $this, 'delete_article' ) );
-            add_action( 'wp_ajax_delete_article',                       array( $this, 'delete_article' ) );
+            add_action( 'wp_ajax_delete_article',                               array( $this, 'delete_article' ) );
             
             // DELETE FOLIO
-            add_action( 'wp_ajax_nopriv_delete_folio',                  array( $this, 'delete_folio' ) );
-            add_action( 'wp_ajax_delete_folio',                         array( $this, 'delete_folio' ) );
+            add_action( 'wp_ajax_delete_folio',                                 array( $this, 'delete_folio' ) );
                         
             // ADD ARTICLE TO FOLIO
-            add_action( 'wp_ajax_nopriv_add_articles_to_folio',         array( $this, 'add_articles_to_folio' ) );
-            add_action( 'wp_ajax_add_articles_to_folio',                array( $this, 'add_articles_to_folio' ) );
+            add_action( 'wp_ajax_add_articles_to_folio',                        array( $this, 'add_articles_to_folio' ) );
                         
             // PUBLISH ARTICLE
-            add_action( 'wp_ajax_nopriv_publish_article',               array( $this, 'publish_article' ) );
-            add_action( 'wp_ajax_publish_article',                      array( $this, 'publish_article' ) );
+            add_action( 'wp_ajax_publish_article',                              array( $this, 'publish_article' ) );
             
             // ADD RENDITION
-            add_action( 'wp_ajax_nopriv_create_new_rendition',          array( $this, 'create_new_rendition' ) );
-            add_action( 'wp_ajax_create_new_rendition',                 array( $this, 'create_new_rendition' ) );
+            add_action( 'wp_ajax_create_new_rendition',                         array( $this, 'create_new_rendition' ) );
             
             // DELETE RENDITION
-            add_action( 'wp_ajax_nopriv_delete_rendition',              array( $this, 'delete_rendition' ) );
-            add_action( 'wp_ajax_delete_rendition',                     array( $this, 'delete_rendition' ) );
+            add_action( 'wp_ajax_delete_rendition',                             array( $this, 'delete_rendition' ) );
             
             // PUSH RENDITION
-            add_action( 'wp_ajax_nopriv_push_rendition',                array( $this, 'push_rendition' ) );
-            add_action( 'wp_ajax_push_rendition',                       array( $this, 'push_rendition' ) );
+            add_action( 'wp_ajax_push_rendition',                               array( $this, 'push_rendition' ) );
             
             // GET ALL ARTICLES
-            add_action( 'wp_ajax_nopriv_get_folio_articles',            array( $this, 'get_folio_articles' ) );
-            add_action( 'wp_ajax_get_folio_articles',                   array( $this, 'get_folio_articles' ) );
+            add_action( 'wp_ajax_get_folio_articles',                           array( $this, 'get_folio_articles' ) );
             
             // UPDATE ARTICLE POSITIONS FOR A FOLIO
-            add_action( 'wp_ajax_nopriv_update_article_positions',      array( $this, 'update_article_positions' ) );
-            add_action( 'wp_ajax_update_article_positions',             array( $this, 'update_article_positions' ) );
+            add_action( 'wp_ajax_update_article_positions',                     array( $this, 'update_article_positions' ) );
             
             // UPDATE RENDITION META
-            add_action( 'wp_ajax_nopriv_update_rendition',              array( $this, 'update_rendition' ) );
-            add_action( 'wp_ajax_update_rendition',                     array( $this, 'update_rendition' ) );
+            add_action( 'wp_ajax_update_rendition',                             array( $this, 'update_rendition' ) );
             
             // GET POSTS ARRAY
-            add_action( 'wp_ajax_nopriv_get_all_posts',                 array( $this, 'get_all_posts' ) );
-            add_action( 'wp_ajax_get_all_posts',                        array( $this, 'get_all_posts' ) );
+            add_action( 'wp_ajax_get_all_posts',                                array( $this, 'get_all_posts' ) );
             
             // IMPORT A POST AS AN ARTICLE
-            add_action( 'wp_ajax_nopriv_import_post_as_article',        array( $this, 'import_post_as_article' ) );
-            add_action( 'wp_ajax_import_post_as_article',               array( $this, 'import_post_as_article' ) );
+            add_action( 'wp_ajax_import_post_as_article',                       array( $this, 'import_post_as_article' ) );
             
             // GET AJAX FORM
-            add_action( 'wp_ajax_nopriv_get_ajax_form',                 array( $this, 'get_ajax_form' ) );
-            add_action( 'wp_ajax_get_ajax_form',                        array( $this, 'get_ajax_form' ) );
+            add_action( 'wp_ajax_get_ajax_form',                                array( $this, 'get_ajax_form' ) );
             
             // CREATE NEW FOLIO
-            add_action( 'wp_ajax_nopriv_create_new_folio',              array( $this, 'create_new_folio' ) );
-            add_action( 'wp_ajax_create_new_folio',                     array( $this, 'create_new_folio' ) );
+            add_action( 'wp_ajax_create_new_folio',                             array( $this, 'create_new_folio' ) );
             
             // IMPORT POSTS AS ARTICLES
-            add_action( 'wp_ajax_nopriv_import_articles',               array( $this, 'import_articles' ) );
-            add_action( 'wp_ajax_import_articles',                      array( $this, 'import_articles' ) );
+            add_action( 'wp_ajax_import_articles',                              array( $this, 'import_articles' ) );
             
             // EDIT FOLIO
-            add_action( 'wp_ajax_nopriv_edit_folio',                    array( $this, 'edit_folio' ) );
-            add_action( 'wp_ajax_edit_folio',                           array( $this, 'edit_folio' ) );
+            add_action( 'wp_ajax_edit_folio',                                   array( $this, 'edit_folio' ) );
             
             // IMPORT HTMLRESOURCES
-            add_action( 'wp_ajax_nopriv_upload_htmlresources',          array( $this, 'upload_htmlresources' ) );
-            add_action( 'wp_ajax_upload_htmlresources',                 array( $this, 'upload_htmlresources' ) );
+            add_action( 'wp_ajax_upload_htmlresources',                         array( $this, 'upload_htmlresources' ) );
             
             // DUPLICATE ARTICLES FROM RENDITION
-            add_action( 'wp_ajax_nopriv_duplicate_articles_from_rendition',     array( $this, 'duplicate_articles_from_rendition' ) );
             add_action( 'wp_ajax_duplicate_articles_from_rendition',            array( $this, 'duplicate_articles_from_rendition' ) );
             
             // SYNC RENDITIONS
-            add_action( 'wp_ajax_nopriv_sync_renditions',               array( $this, 'sync_renditions' ) );
-            add_action( 'wp_ajax_sync_renditions',                      array( $this, 'sync_renditions' ) );            
+            add_action( 'wp_ajax_sync_renditions',                              array( $this, 'sync_renditions' ) );   
+            
+            // FILTER ARTICLES
+            add_action( 'wp_ajax_filter',                                       array( $this, 'filter' ) );   
+            
+            // CLEAR DPS SESSION
+            add_action( 'wp_ajax_clear_dps_session',                            array( $this, 'clear_dps_session' ) ); 
+            
+            // BULK ACTTIONS
+            add_action( 'wp_ajax_bulk_action',                                  array( $this, 'bulk_action' ) ); 
         }
+        
+        
         
         // simple second defense against missing fields so nothing blows up
         public function verifyRequiredFields( $input, $required ){
@@ -141,6 +130,91 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
                 );
                 $this->return_as_json($data);
             }
+        }
+        
+        public function bulk_action(){
+            $action = isset($_POST["bulk-action"]) ? $_POST["bulk-action"] : false;
+            switch($action){
+                case "bulk_assign_articles" :
+                    if( isset($_POST["articles"]) && isset($_POST["assign-issue"]) ){
+                        $articleService = DPSFolioAuthor_Article::getInstance();
+                        foreach( $_POST["articles"] as $article ){
+                            $articleService->update_article_field( $article, "folio", $_POST["assign-issue"]);
+                        }
+                    }
+                    $data = array( "code" => 1 );
+                    break;
+                case "bulk_delete_articles" :
+                    if( isset($_POST["articles"]) ){
+                        $articleService = DPSFolioAuthor_Article::getInstance();
+                        foreach( $_POST["articles"] as $article ){
+                            $articleService->delete_article( $article );
+                        }
+                    }
+                    $data = array( "code" => 1 );
+                    break;
+                default:
+                    $data = array(
+                        "code" => 0,
+                        "message" => "No action supplied"
+                    );
+                    break;
+            }
+            $this->return_as_json($data);
+        }
+        
+        public function clear_dps_session(){
+            unset($_SESSION['folio-producer-api']);
+            $data = array(
+                "code" => 1
+            );
+            $this->return_as_json($data);
+        }
+        
+        public function get_folios(){
+            $this->setupErrorCollecting();
+            $folioService = DPSFolioAuthor_Folio::getInstance();
+            $return = $folioObj->get_folios(array(
+            
+            ));
+            if( is_wp_error($return) ){
+                $data = array(
+                    "code" => 0,
+                    "message" => $this->generate_errors($return)
+                );
+            }else{
+                $data = array(
+                    "code" => 1,
+                    "folios" => $return
+                );
+            }
+            $this->return_as_json($data);
+        }
+        
+        public function filter(){
+            $this->setupErrorCollecting();
+            $filterService = DPSFolioAuthor_Filter::getInstance();
+            $return = $filterService->filter(array(
+                "template"  => isset($_POST["template"]) ? $_POST["template"] : null,
+                "type"      => isset($_POST["type"]) ? $_POST["type"] : null,
+                "search"    => isset($_POST["query"]) ? $_POST["query"] : null
+            ));
+            if( is_wp_error($return) ){
+                $data = array(
+                    "code" => 0,
+                    "message" => $this->generate_errors($return)
+                );
+            }else{
+                $data = array(
+                    "code" => 1,
+                    "found" => $return
+                );
+            }
+            $this->return_as_json($data);
+        }
+        
+        public function get_articles(){
+            $this->setupErrorCollecting();
         }
         
         public function sync_renditions(){
@@ -207,33 +281,12 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
         }
         
         public function get_ajax_form(){
+        
             $this->setupErrorCollecting();
-            switch ($_POST['form']) {
-                case "create_new_folio":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/create-new-folio.php' );
-                    break;
-                case "create_new_rendition":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/create-new-rendition.php' );
-                    break;
-                case "add_articles_to_folio":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/add-articles-to-folio.php' );
-                    break;
-                case "import_articles":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/import-articles.php' );
-                    break;
-                case "edit_folio":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/edit-folio.php' );
-                    break;
-                case "duplicate_articles_from_rendition":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/duplicate-articles-from-rendition.php' );
-                    break;
-                case "import_sidecar_xml":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/import-sidecar-xml.php' );
-                    break;
-                case "rendition_sync":
-                    include_once( dirname( __DIR__  ) . '/views/admin/ajax/rendition-sync.php' );
-                    break;
-            }
+            $ajaxView = str_replace("_", "-", $_POST['form']);
+            
+            include_once( dirname( __DIR__  ) . "/views/admin/ajax/$ajaxView.php" );
+            
             die();
         }
         
@@ -319,7 +372,10 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
         public function duplicate_articles_from_rendition(){
             $this->setupErrorCollecting();
             $articleService = DPSFolioAuthor_Article::getInstance();
-            $articles = $articleService->get_articles( null, $_POST["rendition"] );
+            $articles = $articleService->get_articles( array(
+                'filter' => null, 
+                'folioID' => $_POST["rendition"] 
+            ));
             $return = $articleService->duplicate_articles_from_rendition( $_POST["folio"], $articles );
             if( !is_wp_error($return) ){
                 $data = array(
@@ -356,7 +412,10 @@ if(!class_exists('DPSFolioAuthor_Ajax')) {
         public function get_folio_articles(){
             $this->setupErrorCollecting();
             $articleService = DPSFolioAuthor_Article::getInstance();
-            $return = $articleService->get_articles( null, $_POST["folioID"] );
+            $return = $articleService->get_articles( array(
+                'filter' => null, 
+                'folioID' => $_POST["folioID"] 
+            ));
             $data = array();
             if( is_wp_error($return) ){
                 $data["code"] = 0;

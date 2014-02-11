@@ -3,7 +3,7 @@
     $articlePost = get_post( $_POST['folio'] ); 
     $folioParent = $folioService->folio( $articlePost->post_parent );
 ?>
-<form class="text-left checkbox-list">
+<form class="text-left checkbox-list medium row">
     <?php if( count($folioParent["renditions"]) > 1 ): ?>
     <input type="hidden" name="action" value="duplicate_articles_from_rendition"/>
     <input type="hidden" name="folio" value="<?php echo $_POST['folio'];?>"/>

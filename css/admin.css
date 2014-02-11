@@ -1,10 +1,5 @@
-/* @override 
-	http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.7.1
-	http://localhost:8888/gather_wordpress/wp-content/plugins/dps-folio-author/css/admin.css?ver=3.6
-	http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.7.1
-	http://www.rd.com.php53-19.dfw1-2.websitetestlink.com/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.6
-	http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.8
-*/
+/* @override http://localhost:8888/gather_wordpress/wp-content/plugins/adobe-folio-author-wp-plugin/css/admin.css?ver=3.8.1 */
+
 
 @charset "UTF-8";
 @import url(//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
@@ -54,7 +49,8 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 /* GUMBY Customizations */
 .folio-author_page_dpsfa_page_articles .row { width: 100%; max-width: 1800px; min-width: 1000px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
 .row { width: 100%; max-width: 1300px; min-width: 900px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
-.modal .row { min-width: 200px; max-width: 700px; }
+.modal .row { min-width: 200px; max-width: 100%;}
+.modal form.medium { max-width: 700px; margin: auto;}
 .modal a.close.switch { padding: 10px; }
 .modal h2 { margin: 15px 0 0px; }
 .modal .checkbox-list label { font-family: "Open Sans"; font-weight: 300; font-size: 1.15em; line-height: 1.25em; display: block; background-color: transparent; }
@@ -66,7 +62,7 @@ body.folio-author_page_dpsfa_page_settings table.form-table { border: none !impo
 
 #ui-datepicker-div { z-index: 9999999 !important; }
 
-.gumby label.checkbox { background-color: transparent; }
+.gumby label.checkbox { background-color: transparent; float:none;}
 .gumby .fileupload-new.thumbnail { width: 100% !important; }
 .gumby .btn a { padding: 0 10px; }
 .disabled { opacity: .25; }
@@ -473,6 +469,35 @@ table#article-renditions tr:hover .article-actions { visibility: visible; }
 
 .gumby textarea, .gumby input[type=text], .gumby input[type=password], .gumby input[type=email], .gumby input[type=number], .gumby input[type=search], .gumby input[type=tel], .gumby input[type=url], .gumby .titlewrap input, .gumby select {
     box-shadow: inset 0px 0px 0px rgba(0,0,0,0) !important;
+}
+
+
+ul.page-numbers li {
+	display: inline-block;
+	border-radius: 4px;
+	margin: 0px;
+	padding: 0px;
+	border: 1px solid #f3f3f3;	
+}
+
+ul.page-numbers li:hover {
+	background-color: #f2f2f2;	
+}
+
+ul.page-numbers li a {
+	padding: 3px 7px;
+	color: #000;
+	display: block;
+}
+
+ul.page-numbers li span {
+	padding: 3px 7px;
+	color: #000;
+	display: block;
+	background-color: #f2f2f2;	
+}
+ul.page-numbers li span.dots {
+	background-color: #fff;	
 }
 
 

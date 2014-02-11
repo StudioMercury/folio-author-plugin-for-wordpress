@@ -32,7 +32,25 @@
               <input type="password" class="wide text input" name="<?php echo $settingsMeta;?>[secret]" placeholder="Provided by Adobe" value="<?php echo isset($settings["secret"]) ? $settings["secret"] : ''; ?>" />
             </li>
           </ul>
-
+          <div class="text-right" style="float:right">
+              
+              <?php if( isset($_SESSION['folio-producer-api'][$settings["company"]][$settings["login"]]) ): ?>
+                <b>Download Server:</b> <?php echo $_SESSION['folio-producer-api'][$settings["company"]][$settings["login"]]["download_server"]; ?> 
+                <BR/>
+                <b>Request Server:</b> <?php echo $_SESSION['folio-producer-api'][$settings["company"]][$settings["login"]]["request_server"]; ?>
+              <?php else: ?>
+                There is no DPS session. You will start one when you push a folio or article to the cloud.
+              <?php endif; ?>
+              <BR/><BR/>
+              
+              <div class="medium default btn ttip" data-tooltip="Use this button if you're having trouble uploading to the cloud.">
+                <a data-action="clear_dps_session"><i class="fa fa-trash-o"></i> Clear DPS Session</a>
+              </div>
+              
+              <BR/><BR/>
+          </div>
+          
+        <br />
         <br />
         <hr />
         <br />
@@ -51,7 +69,6 @@
 
         <br />
         <hr />
-        
 
         <br />
 
@@ -221,7 +238,7 @@
             <p>This plugin is a collaboration between Studio Mercury and Coffee and Code, who have created many customized and engaging experiences together on the DPS platform for a wide variety of clients.</p><BR/>
                 <div class="row">
                 <div class="one columns text-center">
-                    <img src="<?php echo plugins_url('/adobe-folio-author-wp-plugin/assets/admin/logo-smny.png');?>" alt="" width="50%" height="50%">
+                    <img src="<?php echo DPSFA_URL . '/assets/admin/logo-smny.png';?>" alt="" width="50%" height="50%">
                 </div>
                 <div class="four columns">
                     <b>Mercury</b>
@@ -229,7 +246,7 @@
                                         
                 </div>
                 <div class="one columns text-center">
-                    <img src="<?php echo plugins_url('/adobe-folio-author-wp-plugin/assets/admin/logo-cc.png');?>" alt="" width="50%" height="50%">
+                    <img src="<?php echo DPSFA_URL . '/assets/admin/logo-cc.png';?>" alt="" width="50%" height="50%">
                 </div>
                 <div class="four columns">
                     <b>Coffee and Code</b>

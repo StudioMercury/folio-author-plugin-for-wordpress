@@ -1,6 +1,9 @@
 <?php
     $folioObj = DPSFolioAuthor_Folio::getInstance();
-    $folios = $folioObj->get_folios();
+    $folios = $folioObj->get_folios( array(
+        'limit' => -1,
+        'parentOnly' => true
+    ));
     
     $articleObj = DPSFolioAuthor_Article::getInstance();
 ?>
@@ -15,7 +18,6 @@
         <br />
 		<div class="message">
              <h2>
-                <!-- <img class="dps-icon" src="http://placehold.it/50x50"> -->
                 Here are all of your issues.<br />
     			You can <div class="medium normal btn"><a data-action="open_box_new_folio"><i class="fa fa-plus"></i> Create New Issue</a></div>
     			or if you are missing issues

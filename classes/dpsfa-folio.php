@@ -486,7 +486,7 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
             $this->create_local_folios_from_adobe( $adobeFolios );
                 
             // get all local unlinked folios in WP and update existing or delete non-existing unlinked folios
-            $localUnlinkedFolios = $this->get_folios( 'hosted' );
+            $localUnlinkedFolios = $this->get_folios( array( 'filter' =>'hosted') );
             foreach( $localUnlinkedFolios as $localUnlinkedFolio ){
             	// loop through all unlinked hosted renditions
             	foreach($localUnlinkedFolio["renditions"] as $index => $rendition){
@@ -504,7 +504,7 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
             }
             
             // get the new list of unlinked folios
-            $localUnlinkedFolios = $this->get_folios( 'hosted' );
+            $localUnlinkedFolios = $this->get_folios( array( 'filter' =>'hosted') );
             foreach( $localUnlinkedFolios as $localUnlinkedFolio ){
                 if( count($localUnlinkedFolio["renditions"]) < 1){
                     $this->delete_folio($localUnlinkedFolio["localID"], false); 
@@ -761,7 +761,10 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
             
             // delete the articles in the rendition
             $articleService = DPSFolioAuthor_Article::getInstance();
-            $articles = $articleService->get_articles( null, $folio["localID"] );
+            $articles = $articleService->get_articles( array(
+                'filter' => null, 
+                'folioID' => $folio["localID"] 
+            ));
             foreach( $articles as $article ){
                 // double check article is part of the folio and delete
                 if($article["folio"] == $folio["localID"]){ $articleService->delete_article( $article["localID"], false ); }
@@ -788,16 +791,27 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
 		* @param    string   $filter can be `local`, `hosted`, or null - not passing a filter returns all folios
 		*
 		*/
-        public function get_folios( $filter = null ){
-	        $args = array(
-            	'posts_per_page'   => -1,
-            	'orderby'          => 'post_date',
+        public function get_folios( $args = array() ){
+            $defaults = array (
+         		'filter'       => null, // either `local` or `hosted` or null returns all folios
+         		'limit'        => -1, // max number of folios to retrieve
+         		'offset'       => 0, // ability to offset the found posts
+         		'orderby'      => 'post_date', // how to order the found folios,
+         		'parentOnly'   => false
+        	);
+            $args = wp_parse_args( $args, $defaults );
+            extract( $args, EXTR_SKIP );
+        	
+	        $queryArgs = array(
+            	'posts_per_page'   => $limit,
+            	'orderby'          => $orderby,
             	'post_type'        => $this->folioPostType,
+            	'post_parent'      => empty($parentOnly) ? null : 0
             );
 
 			// filter folios by local or hosted
 	        if( isset($filter) ){
-	        	$args['meta_query'] = array(
+	        	$queryArgs['meta_query'] = array(
             		array(
             			'key' => $this->folioPrefix . 'owner',
             			'value' => $filter,
@@ -805,7 +819,7 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
             	);
 	        }
 
-	        $query = new WP_Query( $args );
+	        $query = new WP_Query( $queryArgs );
             $query->get_posts();
             return $this->get_folios_from_query( $query );
         }

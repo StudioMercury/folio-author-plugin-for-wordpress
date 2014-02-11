@@ -228,7 +228,7 @@
     
     <br />
     
-    <div class="medium normal btn"><a class="" data-action="open_box_add_article" data-folio="<?php echo $post_id; ?>" data-article="#addArticle"><i class="fa fa-plus"></i> Add articles</a></div>
+    <div class="medium normal btn"><a class="" data-action="open_box_add_article" data-folio="<?php echo $post_id; ?>" data-parentFolio="<?php echo $folio["parent"];?>" data-article="#addArticle"><i class="fa fa-plus"></i> Add articles</a></div>
     
     <div class="medium normal btn"><a class="" data-action="open_box_duplicate_articles_from_rendition" data-folio="<?php echo $post_id; ?>"><i class="fa fa-copy"></i> Duplicate from rendition</a></div>
     
@@ -268,7 +268,10 @@
 
 <?php 
     $articleService = DPSFolioAuthor_Article::getInstance();
-    $articles = $articleService->get_articles( null, $post_id );
+    $articles = $articleService->get_articles( array(
+        'filter' => null, 
+        'folioID' => $post_id
+    ));
 ?>
 
 <div class="row">

@@ -44,7 +44,7 @@ underscore.extend(DPSFolioAjax.prototype, {
 	    if(typeof actions == "undefined"){ actions = ""; }
 	    if(typeof icon == "undefined"){ icon = ""; }
     	this.openDialog();
-        this.dialog.find("#modal-content").html('<h4>' + message + '</h4>');
+        this.dialog.find("#modal-content").html(message);
         this.dialog.find("#modal-actions").html(actions);
         this.dialog.find("#modal-icon").html('<i class="fa fa-' + icon + '"></i>');
 	},
@@ -73,7 +73,7 @@ underscore.extend(DPSFolioAjax.prototype, {
                                      '<div class="content">' +
                                         '<a class="close switch"><i class="close switch icon-cancel"></i></a>' +
                                         '<div class="row">' +
-                                          '<div class="ten columns centered text-center">' +
+                                          '<div class="twelve columns centered text-center">' +
                                             '<h1 id="modal-head"></h1>' +
                                             '<div id="modal-icon"></div>'+
                                             '<div id="modal-content"></div>' +
@@ -88,12 +88,13 @@ underscore.extend(DPSFolioAjax.prototype, {
 	    this.enableClose();
 	},
 	
-	confirmation_screen: function( onConfirm, onCancel, message, header ){
+	confirmation_screen: function( onConfirm, onCancel, message, header, confirmButton ){
+		confirmButton = (confirmButton) ? confirmButton : "Delete";
     	this.openDialog();
         this.updateDialogHead(header);
         console.log(header);
 
-        confirm = jQuery('<div class="medium danger btn"><a>Delete</a></div>').bind("click", onConfirm );
+        confirm = jQuery('<div class="medium danger btn"><a>'+confirmButton+'</a></div>').bind("click", onConfirm );
         cancel = jQuery('<div class="medium default btn"><a>Cancel</a></div>').bind("click", onCancel );
         buttons = jQuery('<div class="buttons"></div>');
 
@@ -152,7 +153,8 @@ underscore.extend(DPSFolioAjax.prototype, {
 	sync_renditions: function( data ){
     	data = this.dialog.find("form").serialize();
 	    onSuccess = jQuery.proxy(function(response){
-            location.reload();  // articles are done. rendition is pushed
+            alert(response);
+            //location.reload();  // articles are done. rendition is pushed
 	    },this);
 	    onError = jQuery.proxy(function(response){
             message = 'Could not sync renditions.';
@@ -182,6 +184,17 @@ underscore.extend(DPSFolioAjax.prototype, {
 	        this.handle_errors( response, message );
 	    },this);
 	    this.request(data, onSuccess, onError);
+	},
+	
+	clear_dps_session: function( data ){
+    	this.openDialog();
+	    this.updateDialogHead( "Clearing DPS Session" );
+        this.updateDialog( "Clearing your session with the DPS server.", "refresh fa-spin" );
+	    onSuccess = jQuery.proxy(function(response){
+	        this.updateDialogHead( "Session Cleared" );
+	        this.updateDialog( "Next time you upload an article or folio it will renew your session. You can close this modal." );
+	    },this);
+	    this.request(data, onSuccess);
 	},
 
 	open_box_new_rendition: function( data ){
@@ -392,7 +405,7 @@ underscore.extend(DPSFolioAjax.prototype, {
 
 	open_box_add_article: function( data ){
 	    this.openDialog();
-	    this.updateDialogHead( "Select articles to add" );
+	    this.updateDialogHead( "Add articles to rendition" );
 	    data.action = "get_ajax_form";
 	    data.form = "add_articles_to_folio";
 	    callback = jQuery.proxy(function(response){
@@ -628,6 +641,21 @@ underscore.extend(DPSFolioAjax.prototype, {
 	    },this);
 	    this.request(data, callback);
 	},
+	
+	bulk_action: function( data ){
+	    dataObj = jQuery(data.form).serialize();
+	    dataObj = (dataObj) ? dataObj + "&action=bulk_action" : "action=bulk_action";
+	    
+	    onSuccess = jQuery.proxy(function(response){
+            location.reload();
+            console.log(response);
+	    },this);
+	    onError = jQuery.proxy(function(response){
+            message = 'Couldn not do the bulk action';
+	        this.handle_errors( response, message );
+	    },this);
+	    this.request(dataObj, onSuccess, onError);
+	},
 
 	update_article_positions: function( articles ){
 	    console.log(articles);
@@ -652,7 +680,6 @@ underscore.extend(DPSFolioAjax.prototype, {
 
     select_all: function( data ){
         $el = jQuery( data.boxes );
-        console.log($el.find('input:checkbox'));
         $el.find('input:checkbox').trigger('gumby.check');
         jQuery('[data-action="select_all"]').attr('data-action','deselect_all');
 
@@ -660,7 +687,6 @@ underscore.extend(DPSFolioAjax.prototype, {
 
     deselect_all: function( data ){
         $el = jQuery( data.boxes );
-        console.log($el.find('input:checkbox'));
         $el.find('input:checkbox').trigger('gumby.uncheck');
         jQuery('[data-action="deselect_all"]').attr('data-action','select_all');
     },
@@ -673,6 +699,11 @@ underscore.extend(DPSFolioAjax.prototype, {
             this.updateDialogHead("Something went wrong");
             this.updateDialog("Could not do the action: " + action,"warning");
         }
+    },
+    
+    toggle_element: function( data ){
+        jQuery( data.toggle ).fadeToggle("fast");
+        jQuery("#filter-button").toggle();
     },
     
     remove_device: function( data ){
@@ -704,6 +735,25 @@ underscore.extend(DPSFolioAjax.prototype, {
             jQuery("#devices").append($device);
             console.log($device)
         }
+    },
+    
+    filter: function(data){
+        data.query = jQuery(data.search).val();
+	    onSuccess = jQuery.proxy(function(response){
+	        jQuery(data.list).html(response.found);
+            Gumby.initialize(['checkbox']);
+            data = {};
+	        data.toggle = "#filter-options";
+	        this.toggle_element( data );
+	    },this);
+	    onError = jQuery.proxy(function(response){
+            message = 'Something went wrong in the search.';
+	        this.handle_errors( response, message );
+	        data = {};
+	        data.toggle = "#filter-options";
+	        this.toggle_element( data );
+	    },this);
+	    this.request(data, onSuccess, onError);
     },
 
     request: function(data, onSuccess, onError){
@@ -751,6 +801,14 @@ jQuery( document ).ready( function(){
     jQuery('body').on('click', '[data-action]', function(){
         DPSAjax.do_action( jQuery(this).attr('data-action'), jQuery(this));
     });
+    
+    jQuery('body').on('keypress', '[data-option="disable-return"]', function(e){
+        if (e.which == 13) {
+            e.preventDefault();
+            DPSAjax.do_action( jQuery( jQuery(this).data('submit') ).attr('data-action'), jQuery( jQuery(this).data('submit') ) );
+        }
+    });     
+        
     /* BIND ALL ACTIONS TO THEIR DATA-ACTION ATTRIBUTE */
     jQuery('body').on('change','select[data-action-change]', function(){
         DPSAjax.do_action( jQuery(this).attr('data-action-change'), jQuery(this));
@@ -785,18 +843,8 @@ jQuery( document ).ready( function(){
       }
     });
     jQuery( ".sortable.devices" ).disableSelection();
-    
-    /* SORTABLE FOR ARTICLE VIEW */
-    jQuery( ".sortable.article-view" ).sortable({
-      placeholder: "ui-state-highlight",
-      forcePlaceholderSize: true,
-      update: function(event, ui) {
-           console.log(jQuery(this).sortable('toArray'));
-      }
-    });
-    jQuery( ".sortable.article-view" ).disableSelection();
-    
+        
     /* INITIALIZE GUMBY MODULES */
-    Gumby.init({ uiModules: ['checkbox'] });
+    //Gumby.init({ uiModules: ['checkbox'] });
 
 });

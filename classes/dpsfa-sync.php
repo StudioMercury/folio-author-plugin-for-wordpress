@@ -91,12 +91,11 @@ if( !class_exists( 'DPSFolioAuthor_Sync' ) ){
             $timestamp = $this->articleService->get_article_field( $origin, 'localMod' );
             if(strtolower($toUpdate) == "all"){
                 $article = $this->articleService->article($origin);
-                if( isset($article["parent"])  ){
+                if( !empty($article["parent"])  ){
                     $article = $this->articleService->article($article["parent"]);
-                    
                     // copy to parent as well
                     $originalContent = $this->articleService->get_article_field($origin, "content");
-                    $this->articleService->update_article_field($article["localID"],"content",$originalContent);
+                    $this->articleService->update_article_field($article["localID"],"content", $originalContent);
                     $this->articleService->update_article_field($article["localID"], 'localMod', $timestamp);
                 }
                 

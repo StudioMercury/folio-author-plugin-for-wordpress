@@ -5,10 +5,11 @@
     );
     $the_query = new WP_Query( $args );
 ?>
-
 <form class="text-left checkbox-list">
     <input type="hidden" name="action" value="import_articles"/>
     
+    <div class="medium default btn"><a title="Filter"><i class="fa fa-filter"></i></a></div>
+        
     <div class="text-center">
         <div class="medium default btn"><a data-action="select_all" data-boxes="#posts-list">Check All</a></div>
         <div class="medium primary btn"><a class="" data-action="import_articles" data-boxes="#posts-list">Import posts as articles</a></div> 
@@ -38,4 +39,5 @@
     <?php else:?>
         <h5 class="error">No Posts found to import.</h5>
     <?php endif;?>
+        
 </form>

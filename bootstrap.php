@@ -70,6 +70,6 @@ if( dpsfa_requirementsMet() ){
 		register_deactivation_hook( __FILE__,	array( $GLOBALS['dpsfa'], 'deactivate' ) );
 		register_deactivation_hook( __FILE__,	array( $GLOBALS['dpsfa'], 'uninstall' ) );
 	}
-}
-else
+}else{
 	add_action( 'admin_notices', 'dpsfa_requirementsError' );
+}
