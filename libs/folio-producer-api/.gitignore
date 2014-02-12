@@ -1,0 +1,5 @@
+*.phar
+/config.php
+/coverage/
+/docs/
+/vendor/

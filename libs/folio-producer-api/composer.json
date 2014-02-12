@@ -1,0 +1,14 @@
+{
+  "require": {
+    "php": ">=5.3.3"
+  },
+  "require-dev": {
+    "mockery/mockery": "dev-master@dev",
+    "phpunit/phpunit": "3.7.*"
+  },
+  "autoload": {
+    "psr-0": {
+      "DPSFolioProducer": "app/"
+    }
+  }
+}

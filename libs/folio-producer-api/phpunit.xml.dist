@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="test/bootstrap.php"
+         strict="true"
+         verbose="true">
+    <testsuites>
+        <testsuite name="Test Suite">
+            <directory>./test/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./app/</directory>
+        </whitelist>
+    </filter>
+</phpunit>
