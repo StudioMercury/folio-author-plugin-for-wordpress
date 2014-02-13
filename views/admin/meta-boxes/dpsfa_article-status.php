@@ -51,6 +51,9 @@
                     <?php endif; ?>
                 </span>
                 <span class="actions">
+                    <?php if( is_wp_error($folio) ): ?>
+                    <div class="small normal btn"><a href="#" data-action="delete_article" data-article="<?php echo $rendition['localID'];?>"> <i class="fa fa-trash-o"></i></a></div>
+                    <?php endif; ?>
                     <div class="small normal btn"><a href="<?php echo get_edit_post_link($rendition['localID']); ?>"> <i class="fa fa-pencil"></i></a></div>
                 </span>
             </div>

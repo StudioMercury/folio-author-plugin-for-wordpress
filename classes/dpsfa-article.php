@@ -742,34 +742,36 @@ if(!class_exists('DPSFolioAuthor_Article')) {
 		*/
         public function get_articles( $args = array() ){
             $defaults = array (
-         		'filter'       => null, // either `local` or `hosted` or null returns all folios
-         		'limit'        => -1, // max number of folios to retrieve
-         		'offset'       => 0, // ability to offset the found posts
-         		'orderby'      => 'post_date', // how to order the found folios,
-         		'order'        => 'ASC',
-         		'parent'       => null, // post parent
-         		'folioID'      => null, // folio ID
-         		'search'       => null,
-         		'dateStart'    => null,
-         		'dateEnd'      => null,
-         		'customMeta'   => null,
-         		'customValue'  => null,
-         		'paged'        => null,
-         		'returnQuery'  => false,
+         		'filter'       		=> null, // either `local` or `hosted` or null returns all folios
+         		'limit'        		=> -1, // max number of folios to retrieve
+         		'offset'       		=> 0, // ability to offset the found posts
+         		'orderby'      		=> 'post_date', // how to order the found folios,
+         		'order'        		=> 'ASC',
+         		'parent'       		=> null, // post parent
+         		'folioID'      		=> null, // folio ID
+         		'search'       		=> null,
+         		'dateStart'    		=> null,
+         		'dateEnd'      		=> null,
+         		'customMeta'   		=> null,
+         		'customValue'  		=> null,
+         		'paged'        		=> null,
+         		'returnQuery' 		=> false,
+         		'renditionOnly'		=> true
             );
             $args = wp_parse_args( $args, $defaults );
             extract( $args, EXTR_SKIP );
 
 	        $queryArgs = array(
-	            'post_parent'      => $parent,
-            	'posts_per_page'   => $limit,
-            	'orderby'          => $orderby,
-                'order'            => $order,
-                'offset'           => $offset,
-            	'post_type'        => $this->articlePostType,
-                'meta_query'       => array(),
-                's'                => $search,
-                'paged'            => $paged
+	            'post_parent'      		=> $parent,
+            	'posts_per_page'   		=> $limit,
+            	'orderby'          		=> $orderby,
+                'order'            		=> $order,
+                'offset'           		=> $offset,
+            	'post_type'        		=> $this->articlePostType,
+                'meta_query'       		=> array(),
+                's'                		=> $search,
+                'paged'            		=> $paged,
+                'post_parent__not_in'  	=> $renditionOnly ? array(0) : null
             );
 
 			$queryArgs['meta_query']['relation'] = 'AND';

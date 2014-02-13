@@ -41,7 +41,8 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
     			'DPSFolioAuthor_Update'	                => DPSFolioAuthor_Update::getInstance(),
     			'DPSFolioAuthor_Sync'	                => DPSFolioAuthor_Sync::getInstance(),
     			'DPSFolioAuthor_Filter'	                => DPSFolioAuthor_Filter::getInstance(),
-    			'DPSFolioAuthor_Views'	                => DPSFolioAuthor_Views::getInstance()
+    			'DPSFolioAuthor_Views'	                => DPSFolioAuthor_Views::getInstance(),
+    			'DPSFolioAuthor_Utilities'              => DPSFolioAuthor_Utilities::getInstance()
     		);
     	}
 
@@ -258,4 +259,5 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
     require_once(  dirname( __FILE__ ) . '/dpsfa-sync.php' );                           // Class for Syncing changes among articles and folios
     require_once(  dirname( __FILE__ ) . '/dpsfa-filter.php' );                         // Class for Filtering articles and folios
     require_once(  dirname( __FILE__ ) . '/dpsfa-views.php' );                          // Class for Rendering Views
+    require_once(  dirname( __FILE__ ) . '/dpsfa-utilities.php' );                      // Class for Generic Utilities
 }

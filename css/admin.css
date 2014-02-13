@@ -452,8 +452,8 @@ table#article-renditions tr:hover .article-actions { visibility: visible; }
 
 
 .postbox .rendition span.status { display: inline-block; width: 10%; }
-.postbox .rendition span.name { display: inline-block; width: 67%; }
-.postbox .rendition span.actions { display: inline-block; width: 20%; }
+.postbox .rendition span.name { display: inline-block; width: 57%; }
+.postbox .rendition span.actions { display: inline-block; width: 30%; }
 
 
 

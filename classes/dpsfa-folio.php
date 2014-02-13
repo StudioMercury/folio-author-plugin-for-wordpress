@@ -763,8 +763,10 @@ if(!class_exists('DPSFolioAuthor_Folio')) {
             $articleService = DPSFolioAuthor_Article::getInstance();
             $articles = $articleService->get_articles( array(
                 'filter' => null, 
-                'folioID' => $folio["localID"] 
+                'folioID' => $folio["localID"],
+                'renditionOnly' => true
             ));
+            
             foreach( $articles as $article ){
                 // double check article is part of the folio and delete
                 if($article["folio"] == $folio["localID"]){ $articleService->delete_article( $article["localID"], false ); }
