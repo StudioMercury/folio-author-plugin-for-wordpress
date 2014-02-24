@@ -1,12 +1,12 @@
 <?php
 /*
  *   Plugin Name: DPS Folio Authoring Plugin
- *   Plugin URI: http://www.adobe.com
+ *   Plugin URI: http://studiomercury.github.io/folio-author-plugin-for-wordpress
  *   Description: A Wordpress plugin to author Adobe DPS folios
  *   Version: 1.0
  *   Author: Studio Mercury & Coffee + Code
- *   Author URI: TODO
- *   Author Email: TODO
+ *   Author URI: http://studiomercury.github.io/folio-author-plugin-for-wordpress
+ *   Author Email: https://github.com/StudioMercury/folio-author-plugin-for-wordpress/issues?state=open
  *   License: See license file
  *
  */

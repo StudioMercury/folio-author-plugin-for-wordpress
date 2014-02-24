@@ -175,14 +175,6 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
 				self::$notices->debugMode = true;
 			}
 
-            // check to make sure we can upload files
-            $wpContentWritable = $this->checkIfFolderWritable(WP_CONTENT_DIR);
-            if ($wpContentWritable) {
-                $this->makePluginFolderInWPContent();
-            }
-            $upload_dir = wp_upload_dir();
-            $this->checkIfFolderWritable($upload_dir['path']);
-
             /* notices enqueue takes 3 attributes */
             // @message = STRING
             // @grouping = `update` or `error`
@@ -211,35 +203,9 @@ if( !class_exists( 'DPSFolioAuthor' ) ){
         protected function isValid( $property = 'all' ){
 			return true;
 		}
-
-        private function checkIfFolderWritable($path) {
-            if (!is_writable($path)) {
-                self::$notices->enqueue( 'Folio Producer Plugin cannot write to "'.$path.'" directory.' , 'error', 'error');
-                return false;
-            }
-            return true;
-        }
-
-        private function makePluginFolderInWPContent() {
-            if (!file_exists(WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR)) {
-                if (is_file(WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR)) {
-                    self::$notices->enqueue( 'Folio Producer Plugin needs to create necessary "'.WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR.'" directory, but a file exists with the same name.' , 'error', 'error');
-                } else {
-                    $result = mkdir(WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR);
-                    if (!$result) {
-                        self::$notices->enqueue( 'Folio Producer Plugin could not create the necessary "'.WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR.'" directory.' , 'error', 'error');
-                    } else {
-                        $result = touch(WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR.'/test');
-                        if (!$result) {
-                            self::$notices->enqueue( 'Unable to create a file in "'.WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR.'" directory. Please update its permissions.' , 'error', 'error');
-                        } else {
-                            unlink(WP_CONTENT_DIR.'/'.self::PLUGIN_UPLOAD_DIR.'/test');
-                        }
-                    }
-                }
-            }
-        }
+        
     }
+    
 	require_once(  dirname( __DIR__  ) . '/libs/IDAdminNotices/id-admin-notices.php' ); // Class for Admin Notices
     require_once(  dirname( __FILE__ ) . '/dpsfa-settings.php' );                       // Class for Settings
     require_once(  dirname( __FILE__ ) . '/dpsfa-admin.php' );                          // Class for Settings

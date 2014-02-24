@@ -96,24 +96,24 @@ if(!class_exists('DPSFolioAuthor_Device')) {
     		$devices[] = array(
 	            "name"      => "Kindle Fire",
 	            "slug"      => "kindle-fire",
-	            "height"    => "1024",
-	            "width"     => "600",
+	            "height"    => "600",
+	            "width"     => "1024",
 	            "type"      => "tablet"
     		);
 	       
     		$devices[] = array(
 	            "name"      => "Kindle Fire HDX 8.9",
 	            "slug"      => "kindle-fire",
-	            "height"    => "2560",
-	            "width"     => "1600",
+	            "height"    => "1600",
+	            "width"     => "2560",
 	            "type"      => "tablet"
     		);
 	       
     		$devices[] = array(
 	            "name"      => "Kindle Fire HDX 7 / HD 8.9",
 	            "slug"      => "kindle-fire",
-	            "height"    => "1920",
-	            "width"     => "1200",
+	            "height"    => "1200",
+	            "width"     => "1920",
 	            "type"      => "tablet"
     		);
 	       
@@ -128,56 +128,56 @@ if(!class_exists('DPSFolioAuthor_Device')) {
     		$devices[] = array(
 	            "name"      => "B&N Nook 7in SD",
 	            "slug"      => "bn-nook-7-sd",
-	            "height"    => "1024",
-	            "width"     => "600",
+	            "height"    => "600",
+	            "width"     => "1024",
 	            "type"      => "tablet"
     		);
 	       
     		$devices[] = array(
 	            "name"      => "B&N Nook 7in HD",
 	            "slug"      => "bn-nook-7-hd",
-	            "height"    => "1440",
-	            "width"     => "900",
+	            "height"    => "900",
+	            "width"     => "1440",
 	            "type"      => "tablet"
     		);
 	       
     		$devices[] = array(
 	            "name"      => "B&N Nook 9in HD",
 	            "slug"      => "bn-nook-9-hd",
-	            "height"    => "1920",
-	            "width"     => "1280",
+	            "height"    => "1280",
+	            "width"     => "1920",
 	            "type"      => "tablet"
     		);
 	       
     		$devices[] = array(
 	            "name"      => "Google Nexus 4",
 	            "slug"      => "google-nexus-4",
-	            "height"    => "1280",
-	            "width"     => "768",
+	            "height"    => "768",
+	            "width"     => "1280",
 	            "type"      => "mobile"
     		);
 	       
     		$devices[] = array(
 	            "name"      => "Google Nexus 5",
 	            "slug"      => "google-nexus-5",
-	            "height"    => "1920",
-	            "width"     => "1080",
+	            "height"    => "1080",
+	            "width"     => "1920",
 	            "type"      => "mobile"
     		);
            
     		$devices[] = array(
 	            "name"      => "Google Nexus 7",
 	            "slug"      => "google-nexus-7",
-	            "height"    => "1280",
-	            "width"     => "800",
+	            "height"    => "800",
+	            "width"     => "1280",
 	            "type"      => "tablet"
     		);
 	       
     		$devices[] = array(
 	            "name"      => "Google Nexus 10",
 	            "slug"      => "google-nexus-10",
-	            "height"    => "2560",
-	            "width"     => "1600",
+	            "height"    => "1600",
+	            "width"     => "2560",
 	            "type"      => "tablet"
     		);
 	       	       
