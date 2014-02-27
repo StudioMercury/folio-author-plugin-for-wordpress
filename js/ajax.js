@@ -153,8 +153,7 @@ underscore.extend(DPSFolioAjax.prototype, {
 	sync_renditions: function( data ){
     	data = this.dialog.find("form").serialize();
 	    onSuccess = jQuery.proxy(function(response){
-            alert(response);
-            //location.reload();  // articles are done. rendition is pushed
+            location.reload();  // articles are done. rendition is pushed
 	    },this);
 	    onError = jQuery.proxy(function(response){
             message = 'Could not sync renditions.';
