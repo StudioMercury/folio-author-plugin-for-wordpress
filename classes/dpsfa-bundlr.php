@@ -35,8 +35,10 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
     		$this->folioPrefix = $this->folioService-> folioPrefix;
     		$this->articlePrefix = $this->articleService-> articlePrefix;
     		
-    		require_once dirname(__DIR__).'/libs/Mustache/Autoloader.php'; // LOAD MUSTACHE TEMPLATING LIBRARY
-            Mustache_Autoloader::register();
+    		if( !class_exists('Mustache_Autoloader') ){
+                require_once DPSFA_DIR . '/libs/Mustache/Autoloader.php';
+                Mustache_Autoloader::register();
+            }
         }
         
         /*

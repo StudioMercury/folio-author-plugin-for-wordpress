@@ -24,8 +24,10 @@ if( !class_exists( 'DPSFolioAuthor_Views' ) ){
         public function get_template_engine(){
             switch ($this->templateEngine) {
                 case "Mustache":
-                    require_once DPSFA_DIR . '/libs/Mustache/Autoloader.php';
-                    Mustache_Autoloader::register();
+                    if( !class_exists('Mustache_Autoloader') ){
+                        require_once DPSFA_DIR . '/libs/Mustache/Autoloader.php';
+                        Mustache_Autoloader::register();
+                    }
                     $engine = new Mustache_Engine(array(
                         'loader' => new Mustache_Loader_FilesystemLoader(DPSFA_DIR . '/views/templates/')
                     ));

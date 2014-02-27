@@ -21,6 +21,9 @@ if ( ! defined( 'WPINC' ) ) {
 	die( 'Access denied.' );
 }
 
+// Backwards __DIR__ compatibility:
+if ( !defined('__DIR__') ) define('__DIR__', dirname(__FILE__));
+
 define( 'DPSFA_NAME',					'Digital Publishing Suite Folio Author' );
 define( 'DPSFA_SLUG',					'dps_folio_author' );
 define( 'DPSFA_REQUIRED_PHP_VERSION',	'5.3' );	// because of get_called_class()
