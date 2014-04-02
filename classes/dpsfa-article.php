@@ -715,7 +715,7 @@ if(!class_exists('DPSFolioAuthor_Article')) {
                 $folio = $folioService->folio( $article["folio"] );
                 if( !is_wp_error($folio) ){
                     $adobe = DPSFolioAuthor_Adobe::getInstance();
-                    $return = $adobe->delete_article( $folio["hostedID"], $folio["hostedID"] );
+                    $return = $adobe->delete_article( $article["hostedID"], $folio["hostedID"] );
                     if( is_wp_error($return) ){
                         return $return;
                     }
