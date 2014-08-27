@@ -82,7 +82,7 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
     	private function get_files_from_template( $article ){
             /* Call filter for getting additional files from a custom template */
         	$folio = $this->folioService->folio( $article["folio"] );
-            $templateFiles = apply_filters( 'dpsfa_bundle_article', $article, $folio, $folio["device"] );
+            $templateFiles = apply_filters( 'dpsfa_bundle_article', array(), $article, $folio, $folio["device"] );
             return is_array($templateFiles) ? $templateFiles : array();
     	}
         
