@@ -12,7 +12,7 @@ library needed to communicate with the DPS API servers.
 
 ## Requirements
 
-* [WordPress](http://wordpress.org/): 3.5+
+* [WordPress](http://wordpress.org/): 3.5+ (4.0+ is currently not supported)
 * [PHP](http://php.net/): 5.3+
 * [Digital Publishing Suite Enterprise Account](http://www.adobe.com/products/digital-publishing-suite-enterprise.html) with DPS API Key and Secret
 
