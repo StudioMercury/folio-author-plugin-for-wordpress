@@ -40,6 +40,7 @@ if(!class_exists('DPSFolioAuthor_Admin')) {
 			add_action( 'admin_menu',					__CLASS__ . '::registerPluginPage' );
             add_action( 'admin_print_styles',           __CLASS__ . '::addFontAwesome' );
             add_action( 'admin_init',                   __CLASS__ . '::addAdminScripts' );
+            add_action( 'admin_init',                   __CLASS__ . '::addAdminActions' );
             
             /* Add option for bulk import */
             add_action('admin_footer-edit.php',         __CLASS__ . '::add_bulk_import_to_admin_footer' );
@@ -171,6 +172,18 @@ if(!class_exists('DPSFolioAuthor_Admin')) {
 		public function import_article($post_id, $folioID){
     		$articleService = DPSFolioAuthor_Article::getInstance();
     		return $articleService->import_article_from_post(array( 'postID' => $post_id, 'folioID' => $folioID ));
+		}
+		
+		public static function addAdminActions(){
+			add_action('admin_action_zip_article', function() {
+			    if( empty( $_REQUEST['articleID'] ) )
+			        return;
+					
+				$bundlrService = DPSFolioAuthor_Bundlr::getInstance();
+				$articleService = DPSFolioAuthor_Article::getInstance();
+				
+				$bundlrService->download_zip( $articleService->article( $_REQUEST['articleID'] ) );
+			});
 		}
 
 		public static function addAdminScripts(){

@@ -14,6 +14,10 @@
     <BR/><BR/>
 
     <div class="medium default btn" style="width: 100%;"><a href="<?php echo get_permalink($post_id);?>" target="_BLANK" class="">Preview Article</a></div>
+    
+    <BR/><BR/>
+    
+    <div class="medium default btn" style="width: 100%;"><a data-action="download_zip" data-article="<?php echo $post_id;?>" target="_BLANK" class="">Download Archive</a></div>
 
 </div>
 

@@ -49,25 +49,18 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
         *
         */
         public function bundle( $article ){
-            /* Bring together all articles files */
-            $files = array();
-           
-            /* FOLIO THUMBS/PREVIEWS */
-            $images = $this->get_article_images($article);
+            // Collect article files
+            $collectedFiles = $this->collect_article_files($article);  
+			
+			// Merge required folio files
+    	    $filesToZip = array_merge( array( 
+			    	    				"mimetype", dirname(__DIR__)."/views/folio/mimetype", // MIMETYPE has to be first
+			    	    				"Folio.xml" => $this->create_article_xml($article), // Folio XML
+			    	    				"META-INF/pkgproperties.xml" => $this->create_meta_pkg_properties($collectedFiles) // Create properties package of all collected files
+			    	    			   ), $collectedFiles );
             
-            /* ADDITIONAL FILES FROM THE TEMPLATES */
-            $templateAdditions = $this->get_files_from_template( $article );
-            
-            /* HTML */
-            $html = $this->get_article_html_content($article);     
-            $indexFile = $this->get_article_index_file( $article, $html );
-            $files["index.html"] = $indexFile["file"];
-            
-            /* MERGE ALL FILES TOGETHER */
-            $articleFiles = array_merge($files, $images, $indexFile["assets"], $templateAdditions);
-
             /* Combine files into folio format */
-    		$bundle = $this->create_zip( $articleFiles, $article );
+    		$bundle = $this->create_zip( $filesToZip, ".folio", dirname(__DIR__)."/views/templates/folioStarter.zip" );
     		return $bundle;
         }
     	
@@ -101,23 +94,19 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
             copy( dirname(__DIR__)."/views/folio/previewThumbs/thumb_p.png" , $previewThumb);
             return $previewThumb;
     	}
-    
-    	private function create_zip( $files, $article ){
-    	    // Create a package property of all the files about to go into the zip
-    	    $files["META-INF/pkgproperties.xml"] = $this->create_meta_pkg_properties($files);
-
-    		// Credit to Vito Tardia for using PHP to create ePubs: http://www.sitepoint.com/building-epub-with-php-and-markdown/
-            $bundle = tempnam($this->tmpDir,"dpsarticle");
-            rename($bundle, $bundle.='.folio');
-            copy(dirname(__DIR__)."/views/templates/folioStarter.zip", $bundle);
+    	
+    	private function create_zip( $files, $extension = ".zip", $existingZip = false){
+	    	$bundle = tempnam($this->tmpDir,"dpsarticle");
+            rename($bundle, $bundle .= $extension );
+            if($existingZip){
+           		copy($existingZip, $bundle);
+            }
             
-            // Create new Zip archive. MIMETYPE and XML need to go first
+            // Create new Zip archive.
             $zip = new ZipArchive();
             $zip->open( $bundle, ZipArchive::CREATE );
-            $zip->addFile( dirname(__DIR__)."/views/folio/mimetype", "mimetype" );
-            $zip->addFile( $this->create_article_xml($article), "Folio.xml" );
             
-            // Add additional files to the bundle
+            // Add files one by one
             foreach($files as $filename => $filepath){
                 if($filepath){ $zip->addFile( $filepath, $filename ); }
             }
@@ -126,7 +115,46 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
             $zip->close();
             return $bundle;
     	}
-    
+    	
+    	private function collect_article_files( $article ){
+	    	/* Bring together all articles files */
+            $files = array();
+            
+            /* FOLIO THUMBS/PREVIEWS */
+            $images = $this->get_article_images($article);
+            
+            /* ADDITIONAL FILES FROM THE TEMPLATES */
+            $templateAdditions = $this->get_files_from_template( $article );
+            
+             /* HTML */
+            $html = $this->get_article_html_content($article);     
+            $indexFile = $this->get_article_index_file( $article, $html );
+            $files["index.html"] = $indexFile["file"];
+			
+			/* MERGE ALL FILES TOGETHER */
+            $collectedFiles = array_merge($files, $images, $indexFile["assets"], $templateAdditions);
+            
+            return $collectedFiles;
+    	}
+    	
+    	public function download_zip( $article ){
+            // Collect article files
+            $collectedFiles = $this->collect_article_files($article);         
+            
+            /* Combine files into folio format */
+    		$bundle = $this->create_zip( $collectedFiles );
+			
+    		//header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
+	        header("Content-Type: application/zip");
+	        header("Content-Transfer-Encoding: Binary");
+	        header("Content-Length: ".filesize($bundle));
+	        header("Content-Disposition: attachment; filename=\"".basename($article["meta"]["name"])."_article.zip\"");
+	       
+			readfile($bundle);
+			
+			exit;
+    	}
+    	 	    
     	private function create_article_xml( $article ){
     	    // Get article + folio meta and merge together
             $folioMeta = $this->folioService->get_folio_meta( $article["folio"] );
@@ -203,6 +231,20 @@ if( !class_exists( 'DPSFolioAuthor_Bundlr' ) ){
     	private function get_article_index_file( $article, $htmlString ){
     	    $file = tempnam($this->tmpDir,"index");
             $html = $this->update_html_assets($article, $htmlString);
+            
+            // Tidy the HTML
+    	    if(extension_loaded('tidy')){
+    	    	$config = array(
+				           	'indent'         => true,
+						   	'output-xhtml'   => true,
+						   	'wrap'           => 200
+				          );
+	    	    $tidy = new tidy;
+				$tidy->parseString($html["content"], $config, 'utf8');
+				$tidy->cleanRepair();
+				$html["content"] = $tidy->value;
+    	    }
+    	    
     	    $result = file_put_contents($file, $html["content"]);
             return array(
                 "file"    => $file,

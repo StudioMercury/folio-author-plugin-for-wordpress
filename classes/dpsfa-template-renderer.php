@@ -18,13 +18,6 @@ if( !class_exists( 'DPSFolioAuthor_TemplateRenderer' ) )
         }
 
         public function render($content) {
-            $error = error_get_last();
-            if ($error) {
-                return ini_get('error_prepend_string').
-                    "\nError: $error[message] in $error[file] on line $error[line]\n".
-                    ini_get('error_append_string');
-            }
-
             $html = str_get_html($content);
             if ($this->maxImageWidth !== 0 || $this->maxImageHeight !== 0) {
                 $images = $html->find('img');

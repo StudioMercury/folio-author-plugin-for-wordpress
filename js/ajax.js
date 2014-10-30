@@ -741,6 +741,24 @@ underscore.extend(DPSFolioAjax.prototype, {
         }
     },
     
+    download_zip: function( data ){
+	    params = {  action: 'zip_article',
+		    		articleID: data.article
+		 };
+				 		
+		var form = jQuery(document.createElement( "form" )).attr( {"method": "post", "action": ''} );
+		
+		jQuery.each( params, function(key,value){
+		    jQuery.each( value instanceof Array? value : [value], function(i,val){
+		        jQuery(document.createElement("input"))
+		            .attr({ "type": "hidden", "name": key, "value": val })
+		            .appendTo( form );
+		    }); 
+		}); 
+		
+		form.appendTo( document.body ).submit();
+    },
+    
     filter: function(data){
         data.query = jQuery(data.search).val();
 	    onSuccess = jQuery.proxy(function(response){
